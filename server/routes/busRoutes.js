@@ -33,9 +33,10 @@ router.get('/search', verifyToken, denyRoles(['ambulance_driver']), async (req, 
     const mongoose = require('mongoose');
 
     if (mongoose.connection.readyState === 1) {
-      [originStops, destStops] = await Promise.all([
+      [originStops, destStops, allBuses] = await Promise.all([
         Stop.find({ stop_name: { $regex: origin_stop_name, $options: 'i' } }),
         Stop.find({ stop_name: { $regex: destination_stop_name, $options: 'i' } }),
+        Bus.find({}),
       ]);
     } else {
       // In-memory fallback
@@ -55,6 +56,9 @@ router.get('/search', verifyToken, denyRoles(['ambulance_driver']), async (req, 
       if (!originStops.length) originStops = [{ stop_id: 105, stop_name: origin_stop_name }];
       if (!destStops.length) destStops = [{ stop_id: 108, stop_name: destination_stop_name }];
     }
+
+    const originIds = originStops.map((s) => s.stop_id);
+    const destIds = destStops.map((s) => s.stop_id);
 
     // Filter: origin must come before destination in sequence
     const matchingBuses = allBuses.filter((bus) => {
