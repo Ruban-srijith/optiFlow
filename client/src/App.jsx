@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Bus, Ambulance, ShieldAlert, Crown, User, Download, Radio, Circle, Square, Hospital, MapPin } from 'lucide-react';
 import SearchPanel from './components/SearchPanel';
 import BusCard from './components/BusCard';
 import MapView from './components/MapView';
@@ -28,7 +29,12 @@ import TrafficControlPageAdmin from './components/admin/TrafficControlPage';
 export default function App() {
   const [passengerUser, setPassengerUser] = useState(() => {
     const stored = localStorage.getItem('passenger_info');
-    return stored ? JSON.parse(stored) : null;
+    return stored ? JSON.parse(stored) : {
+      id: 'mock-default',
+      phone_number: '+919876543215',
+      full_name: 'Demo Passenger',
+      role: 'passenger',
+    };
   });
   const [portalMode, setPortalMode] = useState('bus'); // 'bus' | 'ambulance'
   const [showDriverPortal, setShowDriverPortal] = useState(false);
@@ -207,7 +213,9 @@ export default function App() {
       {/* ── NAVBAR ── */}
       <nav className="navbar" style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '10px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 24 }}>{portalMode === 'bus' ? '🚌' : '🚑'}</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            {portalMode === 'bus' ? <Bus size={24} color="#16a34a" /> : <Ambulance size={24} color="#dc2626" />}
+          </span>
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 18, color: '#1e293b' }}>Opti</span>
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 18, color: portalMode === 'bus' ? '#16a34a' : '#dc2626' }}>
             Flow
@@ -244,7 +252,7 @@ export default function App() {
                 gap: 6,
               }}
             >
-              <span>🚌</span> Govt Bus Portal
+              <Bus size={16} /> Govt Bus Portal
             </button>
 
             <button
@@ -265,7 +273,7 @@ export default function App() {
                 gap: 6,
               }}
             >
-              <span>🚑</span> Ambulance Portal
+              <Ambulance size={16} /> Ambulance Portal
             </button>
           </div>
         )}
@@ -292,19 +300,19 @@ export default function App() {
                 alignItems: 'center', marginRight: 8,
               }}
             >
-              <span>🚨</span> Driver Terminal
+              <ShieldAlert size={14} /> Driver Terminal
             </button>
           </>
         )}
 
         {/* Profile & Role Badge Chip */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f8fafc', padding: '4px 12px', borderRadius: 99, border: '1px solid #cbd5e1' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#0f172a' }}>
-            {passengerUser?.role === 'superadmin' ? '👑 Super Admin' :
-             passengerUser?.role === 'transit_admin' ? '🚌 Transit Admin' :
-             passengerUser?.role === 'ambulance_admin' ? '🚑 Health Admin' :
-             passengerUser?.role === 'conductor' ? '👨‍✈️ Conductor' :
-             passengerUser?.role === 'ambulance_driver' ? '🚨 Ambulance Driver' : '👤 Passenger'}
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700, color: '#0f172a' }}>
+            {passengerUser?.role === 'superadmin' ? <><Crown size={14} /> Super Admin</> :
+             passengerUser?.role === 'transit_admin' ? <><Bus size={14} /> Transit Admin</> :
+             passengerUser?.role === 'ambulance_admin' ? <><Hospital size={14} /> Health Admin</> :
+             passengerUser?.role === 'conductor' ? <><User size={14} /> Conductor</> :
+             passengerUser?.role === 'ambulance_driver' ? <><Ambulance size={14} /> Ambulance Driver</> : <><User size={14} /> Passenger</>}
             <span style={{ fontWeight: 500, color: '#64748b', marginLeft: 6, fontFamily: 'monospace' }}>
               ({passengerUser?.phone_number || passengerUser?.full_name})
             </span>
@@ -328,7 +336,7 @@ export default function App() {
               alignItems: 'center', boxShadow: '0 2px 4px rgba(22,163,74,0.3)',
             }}
           >
-            <span>⬇️</span> Install
+            <Download size={14} /> Install
           </button>
         )}
       </nav>
@@ -340,9 +348,9 @@ export default function App() {
           {portalMode === 'bus' ? (
             <>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <StatChip icon="🚌" label={`${allBuses.length} Active Buses`} />
+                <StatChip icon={<Bus size={14} />} label={`${allBuses.length} Active Buses`} />
                 <StatChip
-                  icon="🔴"
+                  icon={<Radio size={14} color="#dc2626" />}
                   label={Object.keys(busUpdates).length > 0 ? `${Object.keys(busUpdates).length} Updated` : 'Awaiting updates'}
                 />
               </div>
@@ -406,19 +414,19 @@ export default function App() {
           >
             {portalMode === 'bus' ? (
               <>
-                <span>🟢 Origin</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Circle fill="#16a34a" color="#16a34a" size={12} /> Origin</span>
                 <span style={{ color: '#e2e8f0' }}>|</span>
-                <span>⬛ Destination</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Square fill="#0f172a" color="#0f172a" size={12} /> Destination</span>
                 <span style={{ color: '#e2e8f0' }}>|</span>
-                <span>🚌 Live Bus</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Bus size={14} /> Live Bus</span>
                 <span style={{ color: '#e2e8f0' }}>|</span>
                 <span style={{ color: '#16a34a' }}>━</span> Route
               </>
             ) : (
               <>
-                <span>🚑 Emergency Ambulance</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Ambulance size={14} color="#dc2626" /> Emergency Ambulance</span>
                 <span style={{ color: '#e2e8f0' }}>|</span>
-                <span>🏥 Trauma Hospital</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Hospital size={14} color="#3b82f6" /> Trauma Hospital</span>
                 <span style={{ color: '#e2e8f0' }}>|</span>
                 <span style={{ color: '#22c55e', fontWeight: 700 }}>━━ Green Corridor</span>
               </>

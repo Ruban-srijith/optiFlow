@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ShieldAlert, Zap, MapPin, Hospital, Check, Ambulance, Bed, Circle } from 'lucide-react';
 import AmbulanceCard from './AmbulanceCard';
 import EmergencyRequestModal from './EmergencyRequestModal';
 import { fetchAmbulances, fetchHospitals, fetchEmergencyRequests, updateEmergencyStatus } from '../services/api';
@@ -73,7 +74,7 @@ export default function AmbulancePortal({
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 24, animation: 'pulse 1.5s infinite' }}>🚨</span>
+            <span style={{ display: 'flex', animation: 'pulse 1.5s infinite' }}><ShieldAlert size={24} /></span>
             <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
               Coimbatore 108 Emergency Dispatch
             </h2>
@@ -100,7 +101,7 @@ export default function AmbulancePortal({
             gap: 6,
           }}
         >
-          ⚡ REQUEST AMBULANCE NOW
+          <Zap size={16} /> REQUEST AMBULANCE NOW
         </button>
       </div>
 
@@ -141,28 +142,28 @@ export default function AmbulancePortal({
                 gap: 4,
               }}
             >
-              🟢 Green Corridor: {activeEmergency.green_corridor_active ? 'ACTIVE' : 'OFF'}
+              <Circle size={12} color={activeEmergency.green_corridor_active ? '#ffffff' : '#16a34a'} fill="currentColor" /> Green Corridor: {activeEmergency.green_corridor_active ? 'ACTIVE' : 'OFF'}
             </button>
           </div>
 
           <div style={{ fontSize: 13, color: '#334155', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <div>📍 <strong>Pickup:</strong> {activeEmergency.pickup_location?.name}</div>
-            <div>🏥 <strong>Hospital:</strong> {activeEmergency.destination_hospital?.name}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><MapPin size={14} /> <span><strong>Pickup:</strong> {activeEmergency.pickup_location?.name}</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Hospital size={14} /> <span><strong>Hospital:</strong> {activeEmergency.destination_hospital?.name}</span></div>
           </div>
 
           {/* Step Tracker */}
           <div style={{ display: 'flex', justifyContent: 'space-between', background: '#f8fafc', padding: '10px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600 }}>
-            <div style={{ color: ['requested', 'dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
-              1. Call Received ✓
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: ['requested', 'dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
+              1. Call Received <Check size={12} />
             </div>
-            <div style={{ color: ['dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
-              2. Unit Dispatched ✓
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: ['dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
+              2. Unit Dispatched <Check size={12} />
             </div>
-            <div style={{ color: ['en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
-              3. En-Route 🚑
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: ['en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
+              3. En-Route <Ambulance size={12} />
             </div>
-            <div style={{ color: activeEmergency.status === 'arrived' ? '#dc2626' : '#94a3b8' }}>
-              4. Hospital Arrival 🏥
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: activeEmergency.status === 'arrived' ? '#dc2626' : '#94a3b8' }}>
+              4. Hospital Arrival <Hospital size={12} />
             </div>
           </div>
         </div>
@@ -171,7 +172,7 @@ export default function AmbulancePortal({
       {/* ── HOSPITALS STATUS ── */}
       <div style={{ marginBottom: 16 }}>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: '#334155', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span>🏥</span> Emergency Trauma Centers ({hospitals.length})
+          <Hospital size={16} /> Emergency Trauma Centers ({hospitals.length})
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
           {hospitals.map((h) => (
@@ -188,8 +189,8 @@ export default function AmbulancePortal({
               <div style={{ fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>{h.name}</div>
               <div style={{ color: '#64748b', fontSize: 11, marginBottom: 6 }}>{h.trauma_center_level}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', fontWeight: 600 }}>
-                <span>🛏️ ICU Beds: {h.icu_beds_available} free</span>
-                <span>🚑 Stationed: {h.ambulances_stationed}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Bed size={12} /> ICU Beds: {h.icu_beds_available} free</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Ambulance size={12} /> Stationed: {h.ambulances_stationed}</span>
               </div>
             </div>
           ))}
@@ -199,7 +200,7 @@ export default function AmbulancePortal({
       {/* ── AMBULANCES LIST ── */}
       <div>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: '#334155', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span>🚑</span> Active Emergency Fleet ({ambulances.length})
+          <Ambulance size={16} /> Active Emergency Fleet ({ambulances.length})
         </h3>
         {loading ? (
           <div style={{ textAlign: 'center', color: '#64748b', padding: 20 }}>Loading ambulances...</div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { CreditCard, AlertTriangle, Lock, CheckCircle2, XCircle } from 'lucide-react';
 
 /**
  * PaymentModal — Razorpay online payment flow for passengers.
@@ -160,7 +161,7 @@ export default function PaymentModal({ bus, originStop, destinationStop, onClose
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#fff' }}>
-            <span style={{ fontSize: 22 }}>💳</span>
+            <span style={{ display: 'flex', alignItems: 'center' }}><CreditCard size={22} /></span>
             <div>
               <div style={{ fontWeight: 700, fontSize: 15 }}>Pay Online</div>
               <div style={{ fontSize: 12, opacity: 0.85 }}>Powered by Razorpay</div>
@@ -283,8 +284,8 @@ export default function PaymentModal({ bus, originStop, destinationStop, onClose
               </div>
 
               {error && (
-                <p style={{ fontSize: 12, color: '#ef4444', marginBottom: 12, textAlign: 'center' }}>
-                  ⚠️ {error}
+                <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, color: '#ef4444', marginBottom: 12, textAlign: 'center' }}>
+                  <AlertTriangle size={14} /> {error}
                 </p>
               )}
 
@@ -295,12 +296,12 @@ export default function PaymentModal({ bus, originStop, destinationStop, onClose
                 onClick={handlePay}
                 disabled={loading}
               >
-                {loading ? <span className="spinner" /> : '💳'}
+                {loading ? <span className="spinner" /> : <CreditCard size={18} style={{ marginRight: 6 }} />}
                 {loading ? 'Processing...' : `Pay ₹${fare} via Razorpay`}
               </button>
 
-              <p style={{ fontSize: 11, color: '#94a3b8', textAlign: 'center', marginTop: 10 }}>
-                🔒 Secured by Razorpay · UPI · Cards · NetBanking · Wallets
+              <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 11, color: '#94a3b8', textAlign: 'center', marginTop: 10 }}>
+                <Lock size={12} /> Secured by Razorpay · UPI · Cards · NetBanking · Wallets
               </p>
             </>
           )}
@@ -319,7 +320,7 @@ export default function PaymentModal({ bus, originStop, destinationStop, onClose
           {/* ── SUCCESS STEP ── */}
           {step === 'success' && (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ fontSize: 52, marginBottom: 12 }}>✅</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><CheckCircle2 size={52} color="#16a34a" /></div>
               <h3 style={{ fontWeight: 800, fontSize: 18, color: '#16a34a', marginBottom: 6 }}>
                 Payment Successful!
               </h3>
@@ -367,7 +368,7 @@ export default function PaymentModal({ bus, originStop, destinationStop, onClose
           {/* ── FAILED STEP ── */}
           {step === 'failed' && (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ fontSize: 52, marginBottom: 12 }}>❌</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><XCircle size={52} color="#ef4444" /></div>
               <h3 style={{ fontWeight: 800, fontSize: 18, color: '#ef4444', marginBottom: 6 }}>
                 Payment Failed
               </h3>

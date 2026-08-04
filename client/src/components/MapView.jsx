@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { renderToString } from 'react-dom/server';
+import { Ambulance, Hospital, Bus } from 'lucide-react';
 
 const COIMBATORE_CENTER = [11.0168, 76.9629];
 
@@ -76,7 +78,7 @@ const createAmbulanceIcon = (status = 'available') => {
         border: 2px solid ${color}; display: flex; align-items: center; justify-content: center;
         boxShadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 20px;
       ">
-        🚑
+        ${renderToString(<Ambulance size={20} color={color} />)}
       </div>
     </div>
   `;
@@ -96,7 +98,7 @@ const createHospitalIcon = (name) => {
       border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center;
       boxShadow: 0 4px 12px rgba(220,38,38,0.3); font-weight: 800; color: #ffffff; font-size: 16px;
     ">
-      🏥
+      ${renderToString(<Hospital size={20} color="#ffffff" />)}
     </div>
   `;
   return L.divIcon({
@@ -237,7 +239,7 @@ export default function MapView({
           >
             <Popup>
               <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
-                <strong style={{ color: '#dc2626', fontSize: 13 }}>🏥 {h.name}</strong>
+                <strong style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#dc2626', fontSize: 13 }}><Hospital size={14} /> {h.name}</strong>
                 <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0' }}>{h.address}</p>
                 <div style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>
                   ICU Beds Available: {h.icu_beds_available}
@@ -259,8 +261,8 @@ export default function MapView({
             >
               <Popup>
                 <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#dc2626' }}>
-                    🚑 {amb.vehicle_number}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontWeight: 700, fontSize: 14, color: '#dc2626' }}>
+                    <Ambulance size={16} /> {amb.vehicle_number}
                   </div>
                   <div style={{ fontSize: 12, color: '#475569' }}>{amb.hospital_name}</div>
                   <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
@@ -295,8 +297,8 @@ export default function MapView({
             >
               <Popup onClose={() => setActiveMarker(null)}>
                 <div style={{ fontFamily: 'Inter, sans-serif', minWidth: 160, padding: '4px 0', margin: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#1e293b', margin: '0 0 6px 0' }}>
-                    🚌 Route {bus.bus_number}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: 14, color: '#1e293b', margin: '0 0 6px 0' }}>
+                    <Bus size={16} /> Route {bus.bus_number}
                   </div>
                   <div style={{ fontSize: 12, color: '#64748b', margin: '0 0 8px 0' }}>
                     {bus.route_name}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ShieldAlert, X, AlertTriangle, Zap } from 'lucide-react';
 import { createEmergencyRequest } from '../services/api';
 
 export default function EmergencyRequestModal({ hospitals, onClose, onRequestCreated }) {
@@ -83,7 +84,7 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 28 }}>🚨</span>
+            <span style={{ display: 'flex', alignItems: 'center' }}><ShieldAlert size={28} color="#dc2626" /></span>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: '#dc2626', margin: 0 }}>
                 Emergency Ambulance Hotline Dispatch
@@ -96,23 +97,24 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
           <button
             onClick={onClose}
             style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: '#f1f5f9',
               border: 'none',
               borderRadius: 99,
               width: 32,
               height: 32,
               cursor: 'pointer',
-              fontWeight: 700,
               color: '#64748b',
             }}
           >
-            ✕
+            <X size={16} />
           </button>
         </div>
 
         {error && (
           <div
             style={{
+              display: 'flex', alignItems: 'center', gap: 6,
               background: '#fef2f2',
               border: '1px solid #fecaca',
               color: '#991b1b',
@@ -122,7 +124,7 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
               marginBottom: 16,
             }}
           >
-            ⚠️ {error}
+            <AlertTriangle size={14} /> {error}
           </div>
         )}
 
@@ -184,9 +186,9 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
                   color: priority === 'critical' ? '#dc2626' : '#2563eb',
                 }}
               >
-                <option value="critical">🔴 Critical (Green Corridor Active)</option>
-                <option value="high">🟠 High Priority</option>
-                <option value="moderate">🟡 Moderate Priority</option>
+                <option value="critical">Critical (Green Corridor Active)</option>
+                <option value="high">High Priority</option>
+                <option value="moderate">Moderate Priority</option>
               </select>
             </div>
           </div>
@@ -207,12 +209,12 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
                   fontSize: 14,
                 }}
               >
-                <option value="cardiac">❤️ Cardiac Emergency</option>
-                <option value="trauma">🩹 Road Accident / Trauma</option>
-                <option value="stroke">🧠 Acute Stroke</option>
-                <option value="organ_transport">🫀 Organ Transport</option>
-                <option value="maternity">👶 Maternity Care</option>
-                <option value="other">🆘 Other Emergency</option>
+                <option value="cardiac">Cardiac Emergency</option>
+                <option value="trauma">Road Accident / Trauma</option>
+                <option value="stroke">Acute Stroke</option>
+                <option value="organ_transport">Organ Transport</option>
+                <option value="maternity">Maternity Care</option>
+                <option value="other">Other Emergency</option>
               </select>
             </div>
             <div>
@@ -299,7 +301,7 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
               boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
             }}
           >
-            {submitting ? 'Dispatching Ambulance...' : '⚡ DISPATCH EMERGENCY AMBULANCE'}
+            {submitting ? 'Dispatching Ambulance...' : <><Zap size={18} /> DISPATCH EMERGENCY AMBULANCE</>}
           </button>
         </form>
       </div>

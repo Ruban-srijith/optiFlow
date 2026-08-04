@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { User, ShieldAlert, BadgeCheck, Ambulance, Bus, Crown, Zap, AlertTriangle, Info, Smartphone, CheckCircle2 } from 'lucide-react';
 
 const DEMO_ROLES = [
-  { role: 'passenger', title: '👤 Passenger / Citizen', phone: '+919876543215', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
-  { role: 'ambulance_driver', title: '🚨 Ambulance Driver', phone: '+919876543214', color: '#ea580c', bg: '#fff7ed', border: '#fed7aa' },
-  { role: 'conductor', title: '👨‍✈️ Bus Conductor', phone: '+919876543213', color: '#9333ea', bg: '#faf5ff', border: '#e9d5ff' },
-  { role: 'ambulance_admin', title: '🚑 Emergency Admin', phone: '+919876543212', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
-  { role: 'transit_admin', title: '🚌 Transit Admin', phone: '+919876543211', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd' },
-  { role: 'superadmin', title: '👑 Super Admin', phone: '+919876543210', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+  { role: 'passenger', title: <><User size={16} /> Passenger / Citizen</>, phone: '+919876543215', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+  { role: 'ambulance_driver', title: <><ShieldAlert size={16} /> Ambulance Driver</>, phone: '+919876543214', color: '#ea580c', bg: '#fff7ed', border: '#fed7aa' },
+  { role: 'conductor', title: <><BadgeCheck size={16} /> Bus Conductor</>, phone: '+919876543213', color: '#9333ea', bg: '#faf5ff', border: '#e9d5ff' },
+  { role: 'ambulance_admin', title: <><Ambulance size={16} /> Emergency Admin</>, phone: '+919876543212', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+  { role: 'transit_admin', title: <><Bus size={16} /> Transit Admin</>, phone: '+919876543211', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd' },
+  { role: 'superadmin', title: <><Crown size={16} /> Super Admin</>, phone: '+919876543210', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
 ];
 
 export default function PassengerLogin({ onLoginSuccess }) {
@@ -137,7 +138,7 @@ export default function PassengerLogin({ onLoginSuccess }) {
       >
         {/* Logo Header */}
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 44, marginBottom: 2 }}>⚡</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 2 }}><Zap size={44} color="#16a34a" /></div>
           <h1 style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', margin: 0 }}>
             Opti<span style={{ color: '#16a34a' }}>Flow</span>
           </h1>
@@ -149,7 +150,7 @@ export default function PassengerLogin({ onLoginSuccess }) {
         {/* 1-CLICK QUICK LOGIN HERO BANNER */}
         <div style={{ marginBottom: 20, padding: 14, background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 16 }}>
           <div style={{ fontSize: 12, fontWeight: 800, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>⚡ 1-Click Instant Login (No Typing)</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Zap size={14} /> 1-Click Instant Login (No Typing)</span>
             <span style={{ fontSize: 10, background: '#16a34a', color: '#fff', padding: '2px 6px', borderRadius: 4 }}>Fast</span>
           </div>
 
@@ -173,21 +174,21 @@ export default function PassengerLogin({ onLoginSuccess }) {
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                 }}
               >
-                <span style={{ fontSize: 13, fontWeight: 700, color: r.color, whiteSpace: 'nowrap' }}>{r.title}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: r.color, whiteSpace: 'nowrap' }}>{r.title}</span>
               </button>
             ))}
           </div>
         </div>
 
         {error && (
-          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
-            ⚠️ {error}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
+            <AlertTriangle size={14} /> {error}
           </div>
         )}
 
         {info && (
-          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
-            ℹ️ {info}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
+            <Info size={14} /> {info}
           </div>
         )}
 
@@ -200,8 +201,8 @@ export default function PassengerLogin({ onLoginSuccess }) {
         {!otpSent ? (
           <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#94a3b8' }}>
-                📱
+              <span style={{ display: 'flex', alignItems: 'center', position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                <Smartphone size={18} />
               </span>
               <input
                 type="tel"
@@ -227,6 +228,10 @@ export default function PassengerLogin({ onLoginSuccess }) {
               type="submit"
               disabled={loading}
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
                 width: '100%',
                 padding: '12px',
                 borderRadius: 12,
@@ -238,7 +243,7 @@ export default function PassengerLogin({ onLoginSuccess }) {
                 cursor: 'pointer',
               }}
             >
-              {loading ? 'Processing...' : '📲 Send OTP Code'}
+              {loading ? 'Processing...' : <><Smartphone size={16} /> Send OTP Code</>}
             </button>
           </form>
         ) : (
@@ -268,6 +273,10 @@ export default function PassengerLogin({ onLoginSuccess }) {
               type="submit"
               disabled={loading}
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
                 width: '100%',
                 padding: '12px',
                 borderRadius: 12,
@@ -279,7 +288,7 @@ export default function PassengerLogin({ onLoginSuccess }) {
                 cursor: 'pointer',
               }}
             >
-              {loading ? 'Verifying...' : '✅ Confirm & Login'}
+              {loading ? 'Verifying...' : <><CheckCircle2 size={16} /> Confirm & Login</>}
             </button>
 
             <button

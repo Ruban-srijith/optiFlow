@@ -1,4 +1,5 @@
 import React from 'react';
+import { Ambulance, Zap, Check } from 'lucide-react';
 
 export default function AmbulanceCard({ ambulance, onSelect, isSelected }) {
   const getStatusBadge = (status) => {
@@ -34,7 +35,7 @@ export default function AmbulanceCard({ ambulance, onSelect, isSelected }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 24 }}>🚑</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Ambulance size={24} color="#dc2626" /></span>
           <div>
             <div style={{ fontWeight: 700, fontSize: 15, color: '#0f172a' }}>
               {ambulance.vehicle_number}
@@ -77,7 +78,7 @@ export default function AmbulanceCard({ ambulance, onSelect, isSelected }) {
           </span>
         </div>
         <div>
-          <span style={{ color: '#94a3b8' }}>Battery:</span> ⚡ {ambulance.battery_level || 98}%
+          <span style={{ color: '#94a3b8' }}>Battery:</span> <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}><Zap size={12} color="#f59e0b" /> {ambulance.battery_level || 98}%</span>
         </div>
       </div>
 
@@ -95,7 +96,7 @@ export default function AmbulanceCard({ ambulance, onSelect, isSelected }) {
                 color: '#64748b',
               }}
             >
-              ✓ {eq}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}><Check size={10} color="#16a34a" /> {eq}</span>
             </span>
           ))}
         </div>
