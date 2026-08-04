@@ -75,14 +75,43 @@ app.use('/api/traffic', trafficRoutes);
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'OptiFlow API',
+    service: 'OptiFlow API Single Port Server',
     version: '2.0.0',
     timestamp: new Date().toISOString(),
-    apps: {
-      passenger: process.env.CLIENT_URL,
-      conductor: process.env.CONDUCTOR_URL,
-    },
+    single_port_app: 'http://localhost:5001',
   });
+});
+
+// ---------------------------------------------------------------------------
+// SINGLE PORT STATIC SERVING & SPA FALLBACK
+// ---------------------------------------------------------------------------
+const path = require('path');
+const fs = require('fs');
+
+const clientDist = path.join(__dirname, '../client/dist');
+const adminDist = path.join(__dirname, '../admin/dist');
+const conductorDist = path.join(__dirname, '../client-conductor/dist');
+
+if (fs.existsSync(adminDist)) {
+  app.use('/admin-standalone', express.static(adminDist));
+}
+if (fs.existsSync(conductorDist)) {
+  app.use('/conductor-standalone', express.static(conductorDist));
+}
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+}
+
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return next();
+  }
+  const indexPath = path.join(clientDist, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.send('OptiFlow Single Port App is running! Please run "npm --prefix client run build" to build the unified portal.');
+  }
 });
 
 // ---------------------------------------------------------------------------
