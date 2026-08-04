@@ -28,8 +28,15 @@ import TrafficControlPageAdmin from './components/admin/TrafficControlPage';
 
 export default function App() {
   const [passengerUser, setPassengerUser] = useState(() => {
-    const stored = localStorage.getItem('passenger_info');
-    return stored ? JSON.parse(stored) : {
+    try {
+      const stored = localStorage.getItem('passenger_info');
+      if (stored && stored !== 'undefined') {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('Error reading passenger_info from localStorage:', e);
+    }
+    return {
       id: 'mock-default',
       phone_number: '+919876543215',
       full_name: 'Demo Passenger',

@@ -20,11 +20,15 @@ export default function AmbulanceDriverPortal({ onClose }) {
 
   // Restore session
   useEffect(() => {
-    const stored = localStorage.getItem('driver_token');
-    const user = localStorage.getItem('driver_info');
-    if (stored && user) {
-      const parsed = JSON.parse(user);
-      setDriver(parsed);
+    try {
+      const stored = localStorage.getItem('driver_token');
+      const user = localStorage.getItem('driver_info');
+      if (stored && user && user !== 'undefined') {
+        const parsed = JSON.parse(user);
+        setDriver(parsed);
+      }
+    } catch (e) {
+      console.warn('Error reading driver_info:', e);
     }
   }, []);
 
