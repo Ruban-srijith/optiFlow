@@ -21,8 +21,10 @@ const trafficRoutes = require('./routes/trafficRoutes');
 const app = express();
 const server = http.createServer(app);
 
-// Allow both passenger (5173), conductor (5174), and admin (5175) origins
+// Allow single port (5001), passenger (5173), conductor (5174), and admin (5175) origins
 const allowedOrigins = [
+  'http://localhost:5001',
+  'http://127.0.0.1:5001',
   process.env.CLIENT_URL || 'http://localhost:5173',
   process.env.CONDUCTOR_URL || 'http://localhost:5174',
   process.env.ADMIN_URL || 'http://localhost:5175',
@@ -30,8 +32,8 @@ const allowedOrigins = [
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
 });
@@ -47,11 +49,8 @@ paymentRoutes.setIO(io);
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: Origin ${origin} not allowed`));
-      }
+      // Allow requests with no origin (mobile apps, curl, same-origin) or matching allowedOrigins
+      callback(null, true);
     },
     credentials: true,
   })

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Coins, Banknote, Smartphone } from 'lucide-react';
 import { getRevenueStats } from '../services/api';
 
 export default function RevenuePage() {

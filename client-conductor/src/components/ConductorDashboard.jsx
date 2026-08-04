@@ -255,7 +255,7 @@ function TicketRow({ ticket }) {
           borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
         }}
       >
-        <Ticket size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />
+        🎫
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 600 }}>
@@ -672,7 +672,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
       {/* Navbar */}
       <nav className="navbar" style={{ background: '#1e293b', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', padding: '10px 20px', color: '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 20 }}>{driverRole === 'conductor' ? <Bus size={16} /> : <Ambulance size={16} />}</span>
+          <span style={{ fontSize: 20 }}>{driverRole === 'conductor' ? '🚌' : '🚑'}</span>
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 16, color: '#f8fafc' }}>Opti</span>
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 16, color: driverRole === 'conductor' ? '#16a34a' : '#ef4444' }}>Flow</span>
         </div>
@@ -702,7 +702,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
               transition: 'all 0.2s ease',
             }}
           >
-            <Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus Conductor
+            🚌 Bus Conductor
           </button>
           <button
             onClick={() => setDriverRole('ambulance_driver')}
@@ -718,7 +718,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
               transition: 'all 0.2s ease',
             }}
           >
-            <Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance Driver
+            🚑 Ambulance Driver
           </button>
         </div>
 
@@ -733,7 +733,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
             }}
             title={conductor?.full_name}
           >
-            <User size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />
+            👤
           </div>
           <div className="hide-on-mobile">
             <div style={{ fontSize: 13, fontWeight: 700, color: '#f8fafc', whiteSpace: 'nowrap' }}>
@@ -757,7 +757,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
         {/* GPS tracking status indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span style={{ fontSize: 13 }}><MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span>
+          <span style={{ fontSize: 13 }}>📍</span>
           <span className="hide-on-mobile" style={{ fontSize: 11, color: '#94a3b8' }}>GPS Tracking</span>
         </div>
 
@@ -858,7 +858,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                         cursor: 'pointer',
                       }}
                     >
-                      <Banknote size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Cash
+                      💵 Cash
                     </button>
                     <button
                       type="button"
@@ -871,7 +871,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                         cursor: 'pointer',
                       }}
                     >
-                      <Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Online (QR)
+                      📲 Online (QR)
                     </button>
                   </div>
                 </div>
@@ -980,7 +980,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
                 {recentTickets.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b', border: '2px dashed #cbd5e1', borderRadius: 12 }}>
-                    <div style={{ fontSize: 32, marginBottom: 8 }}><Ticket size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></div>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}>🎫</div>
                     <p style={{ fontWeight: 700, margin: 0 }}>No tickets issued today</p>
                     <p style={{ fontSize: 11, color: '#94a3b8', margin: '4px 0 0 0' }}>Tickets printed or verified on POS will appear here.</p>
                   </div>
@@ -1112,9 +1112,9 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                       {[
                         { val: 'available', label: '✅ Available', color: '#16a34a' },
-                        { val: 'en_route', label: '<Siren size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Dispatch Call', color: '#2563eb' },
-                        { val: 'on_scene', label: '<MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Arrived Pickup', color: '#d97706' },
-                        { val: 'transporting', label: '<Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Transporting', color: '#7c3aed' },
+                        { val: 'en_route', label: '🚨 Dispatch Call', color: '#2563eb' },
+                        { val: 'on_scene', label: '📍 Arrived Pickup', color: '#d97706' },
+                        { val: 'transporting', label: '🏥 Transporting', color: '#7c3aed' },
                       ].map((st) => {
                         const isCurrent = (dispatchData?.ambulance?.status || 'available') === st.val;
                         return (
@@ -1165,7 +1165,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                     <div className="card" style={{ padding: 20, border: '1.5px solid #3b82f6', background: '#eff6ff' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                         <span style={{ background: '#dc2626', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>
-                          <Flame size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> {dispatchData.active_dispatch.priority?.toUpperCase()} CALL
+                          🔥 {dispatchData.active_dispatch.priority?.toUpperCase()} CALL
                         </span>
                         <span style={{ fontSize: 11, color: '#3b82f6', fontWeight: 700, fontFamily: 'monospace' }}>
                           {dispatchData.active_dispatch.request_id}
@@ -1177,10 +1177,10 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                       </h3>
 
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 4 }}>
-                        <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Pickup: <strong>{dispatchData.active_dispatch.pickup_location?.name || 'Gandhipuram Junction'}</strong>
+                        📍 Pickup: <strong>{dispatchData.active_dispatch.pickup_location?.name || 'Gandhipuram Junction'}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 4 }}>
-                        <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination: <strong>{dispatchData.active_dispatch.destination_hospital}</strong>
+                        🏥 Destination: <strong>{dispatchData.active_dispatch.destination_hospital}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 12 }}>
                         📞 Contact: <strong>{dispatchData.active_dispatch.contact_phone}</strong>
@@ -1200,7 +1200,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 20 }}><TrafficCone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span>
+                          <span style={{ fontSize: 20 }}>🚥</span>
                           <div>
                             <div style={{ fontSize: 12, fontWeight: 800, color: dispatchData.active_dispatch.green_corridor_active ? '#15803d' : '#475569' }}>
                               Green Corridor {dispatchData.active_dispatch.green_corridor_active ? 'ENABLED' : 'DISABLED'}

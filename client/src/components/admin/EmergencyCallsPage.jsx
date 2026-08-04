@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Siren } from 'lucide-react';
 import axios from 'axios';
 
 export default function EmergencyCallsPage() {

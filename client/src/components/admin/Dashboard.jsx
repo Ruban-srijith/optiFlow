@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Map, UserSquare2, Ticket, Coins, Banknote, Smartphone } from 'lucide-react';
 import { getBuses, getConductors, getRevenueStats } from '../../services/api';
 
 export default function Dashboard({ onNavigate }) {
