@@ -178,14 +178,13 @@ export default function App() {
     };
 
     return (
-      <div className="admin-layout" style={{ display: 'flex', height: '100vh', background: '#f8fafc' }}>
+      <div className="admin-layout">
         <SidebarAdmin page={adminPage} setPage={setAdminPage} admin={passengerUser} onLogout={handlePassengerLogout} />
-        <div className="admin-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* Top bar */}
-          <header className="admin-navbar" style={{ padding: '16px 24px', background: '#ffffff', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="admin-content">
+          <header className="admin-navbar">
             <div>
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', margin: 0 }}>{adminPageTitles[adminPage]?.title}</h2>
-              <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{adminPageTitles[adminPage]?.sub}</div>
+              <h2 className="admin-navbar-title">{adminPageTitles[adminPage]?.title}</h2>
+              <div className="admin-navbar-sub">{adminPageTitles[adminPage]?.sub}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
@@ -194,7 +193,7 @@ export default function App() {
               </span>
             </div>
           </header>
-          <main className="admin-main" style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
+          <main className="admin-main">
             {renderAdminPage()}
           </main>
         </div>
