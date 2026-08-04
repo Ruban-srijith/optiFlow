@@ -330,9 +330,10 @@ export default function ConductorDashboard({ conductor, onLogout }) {
     if (bus) {
       setSeatedOverride(bus.current_occupancy_seated || 0);
       setStandingOverride(bus.current_occupancy_standing || 0);
+      if (bus.route_stops && bus.route_stops.length > 0) {
+        setOriginStopId(String(bus.route_stops[0].stop_id));
+      }
     }
-    setOriginStopId('');
-    setDestStopId('');
   }, [selectedBusId, buses]);
 
   const loadTickets = useCallback(async () => {
