@@ -30,7 +30,6 @@ function calculateFare(stopCount, passengers) {
   return Math.max(5, stopCount * 2) * passengers;
 }
 
-// ─── Online Payment QR Modal ──────────────────────────────────────────────
 function PaymentQRModal({ qrDetails, onCancel, onSuccess }) {
   const [verifying, setVerifying] = useState(false);
 
