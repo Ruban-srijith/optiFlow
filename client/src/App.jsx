@@ -48,6 +48,7 @@ export default function App() {
   const [originStop, setOriginStop] = useState(null);
   const [destinationStop, setDestinationStop] = useState(null);
   const [paymentBus, setPaymentBus] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
   // Ambulance portal state
   const [ambulances, setAmbulances] = useState([]);
@@ -60,6 +61,60 @@ export default function App() {
   // Booking states
   const [bookingBus, setBookingBus] = useState(null);
   const [refreshBookings, setRefreshBookings] = useState(0);
+
+  // Auto-fetch passenger live GPS location and set nearest starting stop
+  const fetchPassengerLocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+
+          const STOP_COORDINATES = {
+            101: { name: 'Ondipudur', lat: 11.0020, lng: 77.0500 },
+            102: { name: 'Singanallur', lat: 10.9980, lng: 77.0320 },
+            103: { name: 'Ramanathapuram', lat: 10.9990, lng: 76.9850 },
+            104: { name: 'Lakshmi Mills', lat: 11.0080, lng: 76.9720 },
+            105: { name: 'Gandhipuram', lat: 11.0168, lng: 76.9558 },
+            106: { name: 'Lawley Road', lat: 11.0120, lng: 76.9380 },
+            107: { name: 'Vadavalli', lat: 11.0140, lng: 76.9030 },
+            108: { name: 'Maruthamalai', lat: 11.0450, lng: 76.8520 },
+            201: { name: 'Ganapathy', lat: 11.0360, lng: 76.9710 },
+            202: { name: 'Sivananda Colony', lat: 11.0210, lng: 76.9580 },
+            203: { name: 'Town Hall', lat: 10.9960, lng: 76.9620 },
+            204: { name: 'Ukkadam', lat: 10.9910, lng: 76.9610 },
+            205: { name: 'Kovaipudur', lat: 10.9460, lng: 76.9330 },
+            301: { name: 'Railway Station', lat: 10.9980, lng: 76.9680 },
+            302: { name: 'Saibaba Colony', lat: 11.0260, lng: 76.9460 },
+            303: { name: 'Thudiyalur', lat: 11.0780, lng: 76.9400 },
+          };
+
+          let closest = null;
+          let minDist = Infinity;
+          Object.values(STOP_COORDINATES).forEach((stop) => {
+            const dist = Math.hypot(latitude - stop.lat, longitude - stop.lng);
+            if (dist < minDist) {
+              minDist = dist;
+              closest = stop;
+            }
+          });
+
+          if (closest) {
+            setOrigin(closest.name);
+          }
+        },
+        (err) => {
+          console.warn('Geolocation fallback:', err.message);
+          setOrigin('Gandhipuram');
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchPassengerLocation();
+  }, []);
 
   // Automatically enforce portal mode based on role
   useEffect(() => {
@@ -184,14 +239,13 @@ export default function App() {
     };
 
     return (
-      <div className="admin-layout" style={{ display: 'flex', height: '100vh', background: '#f8fafc' }}>
+      <div className="admin-layout">
         <SidebarAdmin page={adminPage} setPage={setAdminPage} admin={passengerUser} onLogout={handlePassengerLogout} />
-        <div className="admin-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* Top bar */}
-          <header className="admin-navbar" style={{ padding: '16px 24px', background: '#ffffff', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="admin-content">
+          <header className="admin-navbar">
             <div>
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', margin: 0 }}>{adminPageTitles[adminPage]?.title}</h2>
-              <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{adminPageTitles[adminPage]?.sub}</div>
+              <h2 className="admin-navbar-title">{adminPageTitles[adminPage]?.title}</h2>
+              <div className="admin-navbar-sub">{adminPageTitles[adminPage]?.sub}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
@@ -200,7 +254,7 @@ export default function App() {
               </span>
             </div>
           </header>
-          <main className="admin-main" style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
+          <main className="admin-main">
             {renderAdminPage()}
           </main>
         </div>
@@ -368,6 +422,7 @@ export default function App() {
                 onSelectBus={handleSelectBus}
                 onPayOnline={setPaymentBus}
                 onBookSeat={setBookingBus}
+                onLocateUser={fetchPassengerLocation}
                 userRole={passengerUser?.role}
                 originStop={originStop}
                 destinationStop={destinationStop}
@@ -399,6 +454,7 @@ export default function App() {
             destinationStop={destinationStop}
             ambulances={ambulances}
             hospitals={hospitals}
+            userLocation={userLocation}
           />
 
           {/* Map legend */}

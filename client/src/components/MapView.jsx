@@ -110,6 +110,21 @@ const createHospitalIcon = (name) => {
   });
 };
 
+const createUserIcon = () => {
+  const html = `
+    <div style="width: 32px; height: 32px; position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="position: absolute; width: 32px; height: 32px; background: rgba(22, 163, 74, 0.3); border-radius: 50%; animation: pulse-dot 1.5s ease-in-out infinite;"></div>
+      <div style="width: 16px; height: 16px; background: #16a34a; border: 3px solid #ffffff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>
+    </div>
+  `;
+  return L.divIcon({
+    html,
+    className: 'custom-user-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+  });
+};
+
 const createMarkerIcon = (label, color) => {
   const html = `
     <div style="position: relative; width: 32px; height: 32px;">
@@ -155,6 +170,7 @@ export default function MapView({
   ambulances = [],
   hospitals = [],
   activeEmergency,
+  userLocation,
 }) {
   const [activeMarker, setActiveMarker] = useState(null);
   const mapRef = useRef(null);
@@ -227,6 +243,22 @@ export default function MapView({
           position={[destinationStop.location.coordinates[1], destinationStop.location.coordinates[0]]}
           icon={createMarkerIcon('B', '#1e293b')}
         />
+      )}
+
+      {/* Passenger Live Location Marker */}
+      {userLocation && (
+        <Marker position={userLocation} icon={createUserIcon()} zIndexOffset={500}>
+          <Popup>
+            <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
+              <div style={{ fontWeight: 800, fontSize: 13, color: '#16a34a' }}>
+                📍 Your Current Location
+              </div>
+              <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                Live GPS Active
+              </div>
+            </div>
+          </Popup>
+        </Marker>
       )}
 
       {/* Hospital Markers */}
