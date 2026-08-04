@@ -6,6 +6,7 @@ const Bus = require('../models/Bus');
 const Stop = require('../models/Stop');
 const Ticket = require('../models/Ticket');
 const { getRoutePolyline } = require('../services/googleMaps');
+const { verifyToken, denyRoles, verifyRole } = require('../middleware/authMiddleware');
 
 // TNSTC Fare Formula: ₹2 per stop, minimum ₹5
 function calculateFare(stopCount) {
@@ -15,8 +16,9 @@ function calculateFare(stopCount) {
 // ---------------------------------------------------------------------------
 // GET /api/buses/search
 // Query: origin_stop_name, destination_stop_name
+// Deny: ambulance_driver
 // ---------------------------------------------------------------------------
-router.get('/search', async (req, res) => {
+router.get('/search', verifyToken, denyRoles(['ambulance_driver']), async (req, res) => {
   try {
     const { origin_stop_name, destination_stop_name } = req.query;
 
@@ -163,8 +165,9 @@ router.get('/search', async (req, res) => {
 
 // ---------------------------------------------------------------------------
 // GET /api/buses — list all buses with live positions
+// Deny: ambulance_driver
 // ---------------------------------------------------------------------------
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, denyRoles(['ambulance_driver']), async (req, res) => {
   try {
     const buses = await Bus.find({}, '-__v');
     res.json(buses);
@@ -184,5 +187,40 @@ router.get('/stops', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// ---------------------------------------------------------------------------
+// POST /api/buses/occupancy — Mark bus occupancy (conductor / transit_admin)
+// ---------------------------------------------------------------------------
+router.post(
+  '/occupancy',
+  verifyToken,
+  verifyRole(['conductor', 'transit_admin']),
+  async (req, res) => {
+    try {
+      const { bus_id, seated_passengers, standing_passengers } = req.body;
+      if (!bus_id) return res.status(400).json({ error: 'bus_id is required' });
+
+      const bus = await Bus.findOne({ bus_id });
+      if (!bus) return res.status(404).json({ error: 'Bus not found' });
+
+      if (seated_passengers != null) bus.current_occupancy_seated = Number(seated_passengers);
+      if (standing_passengers != null) bus.current_occupancy_standing = Number(standing_passengers);
+      await bus.save();
+
+      const io = req.app.get('io');
+      if (io) {
+        io.emit('bus_occupancy_update', {
+          bus_id,
+          seated_passengers: bus.current_occupancy_seated,
+          standing_passengers: bus.current_occupancy_standing,
+        });
+      }
+
+      res.json({ success: true, bus });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
 
 module.exports = router;

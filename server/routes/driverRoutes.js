@@ -10,12 +10,15 @@ router.use(verifyRole(['ambulance_driver', 'ambulance_admin', 'superadmin']));
 
 // ---------------------------------------------------------------------------
 // GET /api/driver/my-dispatches - Active emergency call for assigned ambulance
+// Allow: ambulance_driver (own), ambulance_admin (all), superadmin
 // ---------------------------------------------------------------------------
 router.get('/my-dispatches', async (req, res) => {
   try {
     const ambulanceId = req.user.assigned_ambulance_id;
     let query = {};
-    if (ambulanceId) {
+
+    // Ambulance driver only sees own dispatches
+    if (req.user.role === 'ambulance_driver' && ambulanceId) {
       query.assigned_ambulance_id = ambulanceId;
     }
 
@@ -39,8 +42,9 @@ router.get('/my-dispatches', async (req, res) => {
 
 // ---------------------------------------------------------------------------
 // PATCH /api/driver/status - Update driver status and location
+// Allow: ambulance_driver only (own ambulance)
 // ---------------------------------------------------------------------------
-router.patch('/status', async (req, res) => {
+router.patch('/status', verifyRole(['ambulance_driver']), async (req, res) => {
   try {
     const { status, latitude, longitude, request_id, green_corridor_active } = req.body;
     const ambulanceId = req.user.assigned_ambulance_id || req.body.ambulance_id;
@@ -107,13 +111,23 @@ router.patch('/status', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// POST /api/driver/green-corridor - Toggle Green Corridor Override
+// POST /api/driver/green-corridor - Toggle Green Corridor
+// Allow: ambulance_driver (auto-trigger), ambulance_admin (override)
 // ---------------------------------------------------------------------------
 router.post('/green-corridor', async (req, res) => {
   try {
     const { request_id, active } = req.body;
     const request = await EmergencyRequest.findOne({ request_id });
     if (!request) return res.status(404).json({ error: 'Emergency request not found' });
+
+    // Ambulance driver can only toggle for own assigned requests
+    if (
+      req.user.role === 'ambulance_driver' &&
+      req.user.assigned_ambulance_id &&
+      request.assigned_ambulance_id !== req.user.assigned_ambulance_id
+    ) {
+      return res.status(403).json({ error: 'You can only toggle green corridor for your own emergency requests.' });
+    }
 
     request.green_corridor_active = !!active;
     await request.save();
@@ -124,6 +138,40 @@ router.post('/green-corridor', async (req, res) => {
     }
 
     res.json({ success: true, green_corridor_active: request.green_corridor_active });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/driver/turn-by-turn - Get emergency turn-by-turn route
+// Allow: ambulance_driver only
+// ---------------------------------------------------------------------------
+router.get('/turn-by-turn', verifyRole(['ambulance_driver']), async (req, res) => {
+  try {
+    const { pickup_lat, pickup_lng, dest_lat, dest_lng } = req.query;
+
+    if (!pickup_lat || !pickup_lng || !dest_lat || !dest_lng) {
+      return res.status(400).json({ error: 'pickup_lat, pickup_lng, dest_lat, dest_lng are required' });
+    }
+
+    // Build route instructions (simplified — in production, call Google Directions API)
+    const route = {
+      origin: { lat: Number(pickup_lat), lng: Number(pickup_lng) },
+      destination: { lat: Number(dest_lat), lng: Number(dest_lng) },
+      steps: [
+        { instruction: 'Head north on current road', distance: '200m', duration: '1 min' },
+        { instruction: 'Turn right at the intersection', distance: '500m', duration: '2 min' },
+        { instruction: 'Continue straight — Green Corridor Active', distance: '1.2km', duration: '3 min' },
+        { instruction: 'Turn left onto destination road', distance: '300m', duration: '1 min' },
+        { instruction: 'Arrive at destination', distance: '0m', duration: '0 min' },
+      ],
+      total_distance: '2.2km',
+      total_duration: '7 min',
+      green_corridor_active: true,
+    };
+
+    res.json(route);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

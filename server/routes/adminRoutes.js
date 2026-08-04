@@ -10,6 +10,7 @@ const Ticket = require('../models/Ticket');
 const User = require('../models/User');
 const Ambulance = require('../models/Ambulance');
 const EmergencyRequest = require('../models/EmergencyRequest');
+const Booking = require('../models/Booking');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'optiflow_jwt_secret_dev_key';
 
@@ -61,28 +62,43 @@ router.get('/me', verifyAdmin, async (req, res) => {
 });
 
 // ─── GET /api/admin/stats/overview ─────────────────────────────────────────
+// transit_admin/superadmin: bus data; ambulance_admin: emergency data
 router.get('/stats/overview', verifyAdmin, async (req, res) => {
   try {
-    const [busCount, stopCount, conductorCount, ambulanceCount, emergencyCount, userCount] = await Promise.all([
-      Bus.countDocuments(),
-      Stop.countDocuments(),
-      Conductor.countDocuments({ is_active: true }),
-      Ambulance.countDocuments(),
-      EmergencyRequest.countDocuments(),
-      User.countDocuments(),
-    ]);
+    const role = req.admin.role;
+    const stats = {};
 
-    const activeEmergency = await EmergencyRequest.countDocuments({ status: { $in: ['requested', 'dispatched', 'on_scene', 'transporting'] } });
+    // Bus data — only for transit_admin & superadmin
+    if (['transit_admin', 'superadmin'].includes(role)) {
+      const [busCount, stopCount, conductorCount, userCount, bookingCount] = await Promise.all([
+        Bus.countDocuments(),
+        Stop.countDocuments(),
+        Conductor.countDocuments({ is_active: true }),
+        User.countDocuments(),
+        Booking.countDocuments({ status: 'booked' }),
+      ]);
+      stats.buses = busCount;
+      stats.stops = stopCount;
+      stats.conductors = conductorCount;
+      stats.total_users = userCount;
+      stats.active_bookings = bookingCount;
+    }
 
-    res.json({
-      buses: busCount,
-      stops: stopCount,
-      conductors: conductorCount,
-      ambulances: ambulanceCount,
-      total_emergencies: emergencyCount,
-      active_emergencies: activeEmergency,
-      total_users: userCount,
-    });
+    // Emergency data — only for ambulance_admin & superadmin
+    if (['ambulance_admin', 'superadmin'].includes(role)) {
+      const [ambulanceCount, emergencyCount] = await Promise.all([
+        Ambulance.countDocuments(),
+        EmergencyRequest.countDocuments(),
+      ]);
+      const activeEmergency = await EmergencyRequest.countDocuments({
+        status: { $in: ['requested', 'dispatched', 'on_scene', 'transporting'] },
+      });
+      stats.ambulances = ambulanceCount;
+      stats.total_emergencies = emergencyCount;
+      stats.active_emergencies = activeEmergency;
+    }
+
+    res.json(stats);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -145,14 +161,20 @@ router.get('/stops', verifyAdmin, async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// ROUTES (Buses)
+// ROUTES (Buses) — transit_admin / superadmin only
 // ════════════════════════════════════════════════════════════════════════════
+function verifyTransitAdmin(req, res, next) {
+  if (!req.admin || !['transit_admin', 'superadmin'].includes(req.admin.role)) {
+    return res.status(403).json({ error: 'Transit admin access required for bus management.' });
+  }
+  next();
+}
 router.get('/buses', verifyAdmin, async (req, res) => {
   const buses = await Bus.find().sort({ bus_number: 1 });
   res.json(buses);
 });
 
-router.post('/buses', verifyAdmin, async (req, res) => {
+router.post('/buses', verifyAdmin, verifyTransitAdmin, async (req, res) => {
   try {
     const { bus_id, bus_number, route_name, seating_capacity, standing_capacity, route_stops } = req.body;
     if (!bus_id || !bus_number || !route_name || !route_stops?.length) {
@@ -178,7 +200,7 @@ router.post('/buses', verifyAdmin, async (req, res) => {
   }
 });
 
-router.put('/buses/:bus_id', verifyAdmin, async (req, res) => {
+router.put('/buses/:bus_id', verifyAdmin, verifyTransitAdmin, async (req, res) => {
   try {
     const bus = await Bus.findOneAndUpdate(
       { bus_id: req.params.bus_id },
@@ -192,7 +214,7 @@ router.put('/buses/:bus_id', verifyAdmin, async (req, res) => {
   }
 });
 
-router.delete('/buses/:bus_id', verifyAdmin, async (req, res) => {
+router.delete('/buses/:bus_id', verifyAdmin, verifyTransitAdmin, async (req, res) => {
   try {
     const bus = await Bus.findOneAndDelete({ bus_id: req.params.bus_id });
     if (!bus) return res.status(404).json({ error: 'Bus not found' });
@@ -204,14 +226,14 @@ router.delete('/buses/:bus_id', verifyAdmin, async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// CONDUCTORS
+// CONDUCTORS — transit_admin / superadmin only
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/conductors', verifyAdmin, async (req, res) => {
   const conductors = await Conductor.find({}, '-password_hash -__v').sort({ createdAt: -1 });
   res.json(conductors);
 });
 
-router.post('/conductors', verifyAdmin, async (req, res) => {
+router.post('/conductors', verifyAdmin, verifyTransitAdmin, async (req, res) => {
   try {
     const { username, password, full_name, employee_id, assigned_bus_id, phone_number } = req.body;
     if (!username || !password || !full_name || !employee_id) {
@@ -236,7 +258,7 @@ router.post('/conductors', verifyAdmin, async (req, res) => {
   }
 });
 
-router.put('/conductors/:id', verifyAdmin, async (req, res) => {
+router.put('/conductors/:id', verifyAdmin, verifyTransitAdmin, async (req, res) => {
   try {
     const updates = { ...req.body };
     if (updates.password) {
@@ -254,7 +276,7 @@ router.put('/conductors/:id', verifyAdmin, async (req, res) => {
   }
 });
 
-router.delete('/conductors/:id', verifyAdmin, async (req, res) => {
+router.delete('/conductors/:id', verifyAdmin, verifyTransitAdmin, async (req, res) => {
   try {
     const conductor = await Conductor.findByIdAndUpdate(req.params.id, { is_active: false }, { new: true, select: '-password_hash' });
     if (!conductor) return res.status(404).json({ error: 'Conductor not found' });
@@ -265,7 +287,7 @@ router.delete('/conductors/:id', verifyAdmin, async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// REVENUE STATS
+// REVENUE STATS — transit_admin / superadmin only (bus data)
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/stats/revenue', verifyAdmin, async (req, res) => {
   try {

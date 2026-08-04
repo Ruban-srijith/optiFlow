@@ -31,6 +31,8 @@ export default function SearchPanel({
   selectedBus,
   onSelectBus,
   onPayOnline,
+  onBookSeat,
+  userRole,
   BusCardComponent,
   error,
 }) {
@@ -189,6 +191,8 @@ export default function SearchPanel({
                 onSelect={onSelectBus}
                 selected={selectedBus === bus.bus_id}
                 onPayOnline={onPayOnline}
+                onBookSeat={onBookSeat}
+                userRole={userRole}
               />
             ))}
           </div>

@@ -12,6 +12,8 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const ambulanceRoutes = require('./routes/ambulanceRoutes');
 const driverRoutes = require('./routes/driverRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const trafficRoutes = require('./routes/trafficRoutes');
 
 // ---------------------------------------------------------------------------
 // APP SETUP
@@ -66,6 +68,8 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ambulances', ambulanceRoutes);
 app.use('/api/driver', driverRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/traffic', trafficRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

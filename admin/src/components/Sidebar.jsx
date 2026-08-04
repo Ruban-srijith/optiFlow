@@ -56,6 +56,9 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
             <button className={`sidebar-item ${page === 'conductors' ? 'active' : ''}`} onClick={() => setPage('conductors')}>
               <span className="icon">👨‍✈️</span> Conductors
             </button>
+            <button className={`sidebar-item ${page === 'bookings' ? 'active' : ''}`} onClick={() => setPage('bookings')}>
+              <span className="icon">🎟️</span> Seat Bookings
+            </button>
             <button className={`sidebar-item ${page === 'revenue' ? 'active' : ''}`} onClick={() => setPage('revenue')}>
               <span className="icon">💰</span> Revenue Stats
             </button>
@@ -72,6 +75,9 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
             </button>
             <button className={`sidebar-item ${page === 'emergency_calls' ? 'active' : ''}`} onClick={() => setPage('emergency_calls')}>
               <span className="icon">🚨</span> Emergency Dispatch
+            </button>
+            <button className={`sidebar-item ${page === 'traffic_control' ? 'active' : ''}`} onClick={() => setPage('traffic_control')}>
+              <span className="icon">🚥</span> Traffic Control
             </button>
           </>
         )}

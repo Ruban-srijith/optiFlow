@@ -5,6 +5,8 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import RoutesPage from './components/RoutesPage';
 import ConductorsPage from './components/ConductorsPage';
+import BookingsPage from './components/BookingsPage';
+import TrafficControlPage from './components/TrafficControlPage';
 import RevenuePage from './components/RevenuePage';
 import AmbulanceFleetPage from './components/AmbulanceFleetPage';
 import EmergencyCallsPage from './components/EmergencyCallsPage';
@@ -56,9 +58,11 @@ export default function App() {
       case 'users': return <UserManagementPage />;
       case 'routes': return <RoutesPage />;
       case 'conductors': return <ConductorsPage />;
+      case 'bookings': return <BookingsPage />;
       case 'revenue': return <RevenuePage />;
       case 'ambulance_fleet': return <AmbulanceFleetPage />;
       case 'emergency_calls': return <EmergencyCallsPage />;
+      case 'traffic_control': return <TrafficControlPage />;
       default: return <Dashboard onNavigate={setPage} />;
     }
   };
@@ -68,9 +72,11 @@ export default function App() {
     users: { title: 'User Hierarchy', sub: 'Manage roles, admins, drivers, and conductors' },
     routes: { title: 'Bus Routes', sub: 'Manage bus routes and stops' },
     conductors: { title: 'Conductors', sub: 'Manage conductor accounts and assignments' },
+    bookings: { title: 'Commuter Bookings', sub: 'Manage passenger seat reservations' },
     revenue: { title: 'Revenue', sub: 'Collection analytics' },
     ambulance_fleet: { title: 'Ambulance Fleet', sub: 'Emergency medical unit management' },
     emergency_calls: { title: 'Emergency Dispatch', sub: 'Hotline calls and Green Corridor overrides' },
+    traffic_control: { title: 'Traffic Signal Override', sub: 'Coimbatore junction controls and manual overrides' },
   };
 
   return (

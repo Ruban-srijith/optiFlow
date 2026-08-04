@@ -47,7 +47,67 @@ function verifyRole(allowedRoles) {
   };
 }
 
+/**
+ * Middleware: deny specific role(s) from accessing a route.
+ * Useful for blacklisting rather than whitelisting.
+ * @param {Array<string>|string} deniedRoles
+ */
+function denyRoles(deniedRoles) {
+  const rolesList = Array.isArray(deniedRoles) ? deniedRoles : [deniedRoles];
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Superadmin is never denied
+    if (req.user.role === 'superadmin') {
+      return next();
+    }
+
+    if (rolesList.includes(req.user.role)) {
+      return res.status(403).json({
+        error: `Access denied for role: ${req.user.role}`,
+      });
+    }
+    return next();
+  };
+}
+
+/**
+ * Middleware: Check ownership or admin override.
+ * If the user is the resource owner OR has an admin role, allow access.
+ * The ownerField function extracts the owner ID from the request.
+ * @param {Function} getOwnerId - (req) => owner user ID from the resource
+ * @param {Array<string>} adminRoles - roles that can bypass ownership check
+ */
+function ownerOrAdmin(getOwnerId, adminRoles = ['transit_admin', 'ambulance_admin', 'superadmin']) {
+  return async (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Admin roles bypass ownership
+    if (req.user.role === 'superadmin' || adminRoles.includes(req.user.role)) {
+      return next();
+    }
+
+    // Check ownership
+    try {
+      const ownerId = await getOwnerId(req);
+      if (ownerId && String(ownerId) === String(req.user.id)) {
+        return next();
+      }
+    } catch (err) {
+      // ownership check failed, deny
+    }
+
+    return res.status(403).json({ error: 'You can only access your own resources.' });
+  };
+}
+
 module.exports = { 
   verifyToken, 
   verifyRole,
+  denyRoles,
+  ownerOrAdmin,
 };

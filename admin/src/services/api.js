@@ -2,12 +2,16 @@ import axios from 'axios';
 
 const api = axios.create({ baseURL: '/api/admin' });
 const authApi = axios.create({ baseURL: '/api/auth' });
+const generalApi = axios.create({ baseURL: '/api' });
 
-api.interceptors.request.use((config) => {
+const attachToken = (config) => {
   const token = localStorage.getItem('admin_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
-});
+};
+
+api.interceptors.request.use(attachToken);
+generalApi.interceptors.request.use(attachToken);
 
 // Admin Username/Password Auth
 export const adminLogin = (username, password) => api.post('/login', { username, password });
@@ -43,3 +47,20 @@ export const getRevenueStats = (from, to) => {
   if (to) params.to = to;
   return api.get('/stats/revenue', { params });
 };
+
+// Bookings
+export const getBookings = (params) => generalApi.get('/bookings', { params });
+export const deleteBooking = (bookingId, reason) => generalApi.delete(`/bookings/${bookingId}`, { data: { reason } });
+export const patchBooking = (bookingId, data) => generalApi.patch(`/bookings/${bookingId}`, data);
+
+// Traffic Control
+export const getIntersections = () => generalApi.get('/traffic/intersections');
+export const overrideSignal = (data) => generalApi.post('/traffic/signal-override', data);
+export const resetSignal = (intersectionId) => generalApi.post(`/traffic/signal-reset/${intersectionId}`);
+export const getGreenCorridors = () => generalApi.get('/traffic/green-corridors');
+
+// Ambulance Emergency
+export const getAmbulances = () => generalApi.get('/ambulances');
+export const getEmergencyRequests = () => generalApi.get('/ambulances/requests');
+export const updateEmergencyStatus = (requestId, data) => generalApi.patch(`/ambulances/request/${requestId}/status`, data);
+export const getHospitals = () => generalApi.get('/ambulances/hospitals');

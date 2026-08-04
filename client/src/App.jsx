@@ -3,6 +3,8 @@ import SearchPanel from './components/SearchPanel';
 import BusCard from './components/BusCard';
 import MapView from './components/MapView';
 import PaymentModal from './components/PaymentModal';
+import BookingModal from './components/BookingModal';
+import BookingPanel from './components/BookingPanel';
 import AmbulancePortal from './components/AmbulancePortal';
 import AmbulanceDriverPortal from './components/AmbulanceDriverPortal';
 import PassengerLogin from './components/PassengerLogin';
@@ -31,6 +33,19 @@ export default function App() {
   const [ambulances, setAmbulances] = useState([]);
   const [hospitals, setHospitals] = useState([]);
   const [selectedAmbulance, setSelectedAmbulance] = useState(null);
+
+  // Booking states
+  const [bookingBus, setBookingBus] = useState(null);
+  const [refreshBookings, setRefreshBookings] = useState(0);
+
+  // Automatically enforce portal mode based on role
+  useEffect(() => {
+    if (passengerUser?.role === 'ambulance_driver') {
+      setPortalMode('ambulance');
+    } else if (passengerUser?.role === 'conductor') {
+      setPortalMode('bus');
+    }
+  }, [passengerUser]);
 
   const { busPositions, busUpdates, connected } = useSocket();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -119,58 +134,60 @@ export default function App() {
         </div>
 
         {/* ── PORTAL SWITCHER PILL ── */}
-        <div
-          style={{
-            display: 'flex',
-            background: '#f1f5f9',
-            borderRadius: 99,
-            padding: 3,
-            border: '1px solid #cbd5e1',
-            margin: '0 16px',
-          }}
-        >
-          <button
-            onClick={() => setPortalMode('bus')}
+        {passengerUser?.role !== 'ambulance_driver' && passengerUser?.role !== 'conductor' && (
+          <div
             style={{
-              background: portalMode === 'bus' ? '#ffffff' : 'transparent',
-              color: portalMode === 'bus' ? '#15803d' : '#64748b',
-              border: 'none',
-              borderRadius: 99,
-              padding: '6px 14px',
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: portalMode === 'bus' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-              transition: 'all 0.2s ease',
               display: 'flex',
-              alignItems: 'center',
-              gap: 6,
+              background: '#f1f5f9',
+              borderRadius: 99,
+              padding: 3,
+              border: '1px solid #cbd5e1',
+              margin: '0 16px',
             }}
           >
-            <span>🚌</span> Govt Bus Portal
-          </button>
+            <button
+              onClick={() => setPortalMode('bus')}
+              style={{
+                background: portalMode === 'bus' ? '#ffffff' : 'transparent',
+                color: portalMode === 'bus' ? '#15803d' : '#64748b',
+                border: 'none',
+                borderRadius: 99,
+                padding: '6px 14px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: portalMode === 'bus' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <span>🚌</span> Govt Bus Portal
+            </button>
 
-          <button
-            onClick={() => setPortalMode('ambulance')}
-            style={{
-              background: portalMode === 'ambulance' ? '#dc2626' : 'transparent',
-              color: portalMode === 'ambulance' ? '#ffffff' : '#64748b',
-              border: 'none',
-              borderRadius: 99,
-              padding: '6px 14px',
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: portalMode === 'ambulance' ? '0 2px 8px rgba(220,38,38,0.3)' : 'none',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <span>🚑</span> Ambulance Portal
-          </button>
-        </div>
+            <button
+              onClick={() => setPortalMode('ambulance')}
+              style={{
+                background: portalMode === 'ambulance' ? '#dc2626' : 'transparent',
+                color: portalMode === 'ambulance' ? '#ffffff' : '#64748b',
+                border: 'none',
+                borderRadius: 99,
+                padding: '6px 14px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: portalMode === 'ambulance' ? '0 2px 8px rgba(220,38,38,0.3)' : 'none',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <span>🚑</span> Ambulance Portal
+            </button>
+          </div>
+        )}
 
         <div style={{ flex: 1 }} />
 
@@ -182,18 +199,22 @@ export default function App() {
           </span>
         </div>
 
-        <div className="hide-on-mobile" style={{ height: 20, width: 1, background: '#e2e8f0', margin: '0 12px' }} />
-        <button
-          onClick={() => setShowDriverPortal(true)}
-          style={{
-            background: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5',
-            padding: '6px 12px', borderRadius: 99, fontSize: 12,
-            fontWeight: 700, cursor: 'pointer', display: 'flex', gap: 6,
-            alignItems: 'center', marginRight: 8,
-          }}
-        >
-          <span>🚨</span> Driver Terminal
-        </button>
+        {['ambulance_driver', 'ambulance_admin', 'superadmin'].includes(passengerUser?.role) && (
+          <>
+            <div className="hide-on-mobile" style={{ height: 20, width: 1, background: '#e2e8f0', margin: '0 12px' }} />
+            <button
+              onClick={() => setShowDriverPortal(true)}
+              style={{
+                background: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5',
+                padding: '6px 12px', borderRadius: 99, fontSize: 12,
+                fontWeight: 700, cursor: 'pointer', display: 'flex', gap: 6,
+                alignItems: 'center', marginRight: 8,
+              }}
+            >
+              <span>🚨</span> Driver Terminal
+            </button>
+          </>
+        )}
 
         {/* Profile & Role Badge Chip */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f8fafc', padding: '4px 12px', borderRadius: 99, border: '1px solid #cbd5e1' }}>
@@ -257,11 +278,16 @@ export default function App() {
                 selectedBus={selectedBus?.bus_id}
                 onSelectBus={handleSelectBus}
                 onPayOnline={setPaymentBus}
+                onBookSeat={setBookingBus}
+                userRole={passengerUser?.role}
                 originStop={originStop}
                 destinationStop={destinationStop}
                 BusCardComponent={BusCard}
                 error={error}
               />
+              {passengerUser?.role === 'passenger' && (
+                <BookingPanel refreshTrigger={refreshBookings} onBookingUpdate={() => setRefreshBookings((prev) => prev + 1)} />
+              )}
             </>
           ) : (
             <AmbulancePortal
@@ -332,6 +358,20 @@ export default function App() {
           originStop={originStop}
           destinationStop={destinationStop}
           onClose={() => setPaymentBus(null)}
+        />
+      )}
+
+      {/* Booking Modal */}
+      {bookingBus && (
+        <BookingModal
+          bus={bookingBus}
+          originStop={originStop}
+          destinationStop={destinationStop}
+          onClose={() => setBookingBus(null)}
+          onBookingSuccess={() => {
+            setBookingBus(null);
+            setRefreshBookings((prev) => prev + 1);
+          }}
         />
       )}
     </div>

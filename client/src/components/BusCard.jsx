@@ -10,9 +10,7 @@ import { Bus, MapPin } from 'lucide-react';
  *   liveData    — real-time socket data
  *   onSelect    — highlight on map
  *   selected    — boolean
- *   onPayOnline — trigger payment modal with this bus
- */
-export default function BusCard({ bus, liveData, onSelect, selected, onPayOnline }) {
+ *   onPayOnline — trigger payment modal with texport default function BusCard({ bus, liveData, onSelect, selected, onPayOnline, onBookSeat, userRole }) {
   const freeSeats = liveData?.free_seats ?? bus.free_seats;
   const passengers = liveData?.current_passengers ?? bus.current_passengers;
   const capacity = bus.seating_capacity || 40;
@@ -105,12 +103,51 @@ export default function BusCard({ bus, liveData, onSelect, selected, onPayOnline
         </div>
       </div>
 
-      {/* Chips row */}
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+      {/* Chips row & Actions */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
         <Chip icon={<MapPin size={12} color="#475569" />} label={`${bus.intermediate_stops} stops`} />
+        
+        {userRole === 'passenger' && (
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onBookSeat) onBookSeat(bus);
+              }}
+              style={{
+                background: '#15803d',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 6,
+                padding: '6px 12px',
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Reserve Seat
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onPayOnline) onPayOnline(bus);
+              }}
+              style={{
+                background: '#0284c7',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 6,
+                padding: '6px 12px',
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Pay Online
+            </button>
+          </div>
+        )}
       </div>
-
-
 
       {/* Forecast drawer */}
       <ForecastDrawer forecast={bus.forecast} seatingCapacity={capacity} />

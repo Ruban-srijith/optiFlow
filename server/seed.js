@@ -9,6 +9,9 @@ const Payment = require('./models/Payment');
 const Hospital = require('./models/Hospital');
 const Ambulance = require('./models/Ambulance');
 const EmergencyRequest = require('./models/EmergencyRequest');
+const Intersection = require('./models/Intersection');
+const Booking = require('./models/Booking');
+const Admin = require('./models/Admin');
 
 // ---------------------------------------------------------------------------
 // STOP DATA
@@ -231,6 +234,79 @@ const conductorPlain = [
 ];
 
 // ---------------------------------------------------------------------------
+// INTERSECTION DATA (Coimbatore traffic signals)
+// ---------------------------------------------------------------------------
+const intersections = [
+  {
+    intersection_id: 'INT-001',
+    name: 'Gandhipuram Junction',
+    location: { type: 'Point', coordinates: [76.9629, 11.0168] },
+    roads: ['Avinashi Road', 'Cross Cut Road', 'Oppanakara Street'],
+    current_signal_state: 'normal',
+    signal_phases: { north_south_green_sec: 45, east_west_green_sec: 40, yellow_sec: 5, all_red_sec: 3 },
+  },
+  {
+    intersection_id: 'INT-002',
+    name: 'Lakshmi Mills Junction',
+    location: { type: 'Point', coordinates: [76.9706, 11.0152] },
+    roads: ['Avinashi Road', 'Mettupalayam Road'],
+    current_signal_state: 'normal',
+    signal_phases: { north_south_green_sec: 50, east_west_green_sec: 45, yellow_sec: 5, all_red_sec: 3 },
+  },
+  {
+    intersection_id: 'INT-003',
+    name: 'Singanallur Junction',
+    location: { type: 'Point', coordinates: [77.0268, 11.0067] },
+    roads: ['Trichy Road', 'Kamaraj Road'],
+    current_signal_state: 'normal',
+    signal_phases: { north_south_green_sec: 40, east_west_green_sec: 35, yellow_sec: 5, all_red_sec: 3 },
+  },
+  {
+    intersection_id: 'INT-004',
+    name: 'Ukkadam Junction',
+    location: { type: 'Point', coordinates: [76.9715, 10.9913] },
+    roads: ['Trichy Road', 'Sathy Road', 'Palakkad Road'],
+    current_signal_state: 'normal',
+    signal_phases: { north_south_green_sec: 55, east_west_green_sec: 50, yellow_sec: 5, all_red_sec: 3 },
+  },
+  {
+    intersection_id: 'INT-005',
+    name: 'Peelamedu Junction',
+    location: { type: 'Point', coordinates: [77.0084, 11.0264] },
+    roads: ['Avinashi Road', 'ESI Hospital Road'],
+    current_signal_state: 'normal',
+    signal_phases: { north_south_green_sec: 45, east_west_green_sec: 40, yellow_sec: 5, all_red_sec: 3 },
+  },
+];
+
+// ---------------------------------------------------------------------------
+// ADMIN ACCOUNTS
+// ---------------------------------------------------------------------------
+const adminPlain = [
+  {
+    username: 'superadmin',
+    password: 'admin123',
+    full_name: 'System Super Admin',
+    role: 'superadmin',
+    phone_number: '+919876543210',
+  },
+  {
+    username: 'transitadmin',
+    password: 'transit123',
+    full_name: 'Bus Transit Admin',
+    role: 'transit_admin',
+    phone_number: '+919876543211',
+  },
+  {
+    username: 'trafficadmin',
+    password: 'traffic123',
+    full_name: 'Traffic Control Admin',
+    role: 'ambulance_admin',
+    phone_number: '+919876543212',
+  },
+];
+
+// ---------------------------------------------------------------------------
 // SEED FUNCTION
 // ---------------------------------------------------------------------------
 async function seed() {
@@ -248,6 +324,9 @@ async function seed() {
       Hospital.deleteMany(),
       Ambulance.deleteMany(),
       EmergencyRequest.deleteMany(),
+      Intersection.deleteMany(),
+      Booking.deleteMany(),
+      Admin.deleteMany(),
     ]);
     console.log('🗑️  Cleared all collections');
 
@@ -266,6 +345,9 @@ async function seed() {
     await EmergencyRequest.insertMany(initialEmergencyRequests);
     console.log(`✅ Seeded ${initialEmergencyRequests.length} emergency requests`);
 
+    await Intersection.insertMany(intersections);
+    console.log(`✅ Seeded ${intersections.length} traffic intersections`);
+
     // Hash passwords and insert conductors
     const conductors = await Promise.all(
       conductorPlain.map(async ({ password, ...rest }) => ({
@@ -276,10 +358,24 @@ async function seed() {
     await Conductor.insertMany(conductors);
     console.log(`✅ Seeded ${conductors.length} conductor accounts`);
 
-    console.log('\n🚌 OptiFlow Dual Portal seed complete!\n');
-    console.log('Conductor Logins:');
+    // Hash passwords and insert admin accounts
+    const admins = await Promise.all(
+      adminPlain.map(async ({ password, ...rest }) => ({
+        ...rest,
+        password_hash: await bcrypt.hash(password, 12),
+      }))
+    );
+    await Admin.insertMany(admins);
+    console.log(`✅ Seeded ${admins.length} admin accounts`);
+
+    console.log('\n🚌 OptiFlow RBAC Dual Portal seed complete!\n');
+    console.log('─── Conductor Logins ───');
     conductorPlain.forEach((c) =>
       console.log(`  ${c.username} / ${c.password}  →  ${c.full_name} (${c.assigned_bus_id})`)
+    );
+    console.log('─── Admin Logins ───');
+    adminPlain.forEach((a) =>
+      console.log(`  ${a.username} / ${a.password}  →  ${a.full_name} [${a.role}]`)
     );
     console.log('');
 

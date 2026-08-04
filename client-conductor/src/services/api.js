@@ -44,4 +44,14 @@ export const issueTicket = (payload) => api.post('/tickets/issue', payload);
 
 export const fetchTickets = () => api.get('/tickets');
 
+// Occupancy updates
+export const updateBusOccupancy = (payload) => api.post('/buses/occupancy', payload);
+
+// Ambulance & Emergency responses
+export const registerAmbulance = (payload) => api.post('/ambulances/register', payload);
+export const updateAmbulanceStatus = (payload) => api.patch('/driver/status', payload);
+export const toggleGreenCorridor = (payload) => api.post('/driver/green-corridor', payload);
+export const getMyDispatches = () => api.get('/driver/my-dispatches');
+export const getTurnByTurn = (params) => api.get('/driver/turn-by-turn', { params });
+
 export default api;
