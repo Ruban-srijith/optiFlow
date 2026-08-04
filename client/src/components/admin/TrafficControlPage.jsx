@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Activity, AlertCircle, AlertTriangle, Ambulance, ArrowRight, Banknote, BarChart, Bus, CheckCircle, CheckCircle2, ChevronDown, ChevronUp, Circle, Clock, Coins, Compass, CreditCard, DollarSign, Edit, Edit2, Edit3, Flame, Hospital, LogOut, Map, MapPin, Navigation, Phone, PhoneCall, Play, Plus, PlusCircle, Radio, RefreshCw, RotateCcw, Search, ShieldAlert, Siren, Smartphone, StopCircle, Ticket, TrafficCone, Trash2, TrendingUp, User, Users, UserSquare2, X, XCircle } from 'lucide-react';
 import { getIntersections, overrideSignal, resetSignal } from '../../services/api';
-import { ShieldAlert, RefreshCw, Radio, AlertCircle, Play, CheckCircle2, RotateCcw } from 'lucide-react';
-
 export default function TrafficControlPage() {
   const [intersections, setIntersections] = useState([]);
   const [loading, setLoading] = useState(false);

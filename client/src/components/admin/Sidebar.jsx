@@ -1,6 +1,5 @@
 import React from 'react';
-import { BarChart, Users, Activity, PhoneCall, Bus, CreditCard, Navigation, ShieldAlert, LogOut } from 'lucide-react';
-
+import { Activity, AlertCircle, AlertTriangle, Ambulance, ArrowRight, Banknote, BarChart, Bus, CheckCircle, CheckCircle2, ChevronDown, ChevronUp, Circle, Clock, Coins, Compass, CreditCard, DollarSign, Edit, Edit2, Edit3, Flame, Hospital, LogOut, Map, MapPin, Navigation, Phone, PhoneCall, Play, Plus, PlusCircle, Radio, RefreshCw, RotateCcw, Search, ShieldAlert, Siren, Smartphone, StopCircle, Ticket, TrafficCone, Trash2, TrendingUp, User, Users, UserSquare2, X, XCircle } from 'lucide-react';
 export default function Sidebar({ page, setPage, admin, onLogout }) {
   const role = admin?.role || 'superadmin';
 

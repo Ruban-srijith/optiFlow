@@ -9,13 +9,15 @@ dirs.forEach(DIR => {
   fs.readdirSync(DIR).forEach(file => {
     if (file.endsWith('.jsx')) {
       let content = fs.readFileSync(path.join(DIR, file), 'utf8');
-      if (content.includes("from 'lucide-react'")) {
-        content = content.replace(/import \{.*?\} from 'lucide-react';\n/s, ALL_ICONS);
-      } else {
-        content = content.replace(/import React(.*?)\n/, `import React$1\n${ALL_ICONS}`);
-      }
+      
+      // Robustly remove ANY existing lucide-react imports
+      content = content.replace(/import\s+\{[^}]*\}\s+from\s+['"]lucide-react['"];?(\r?\n)*/g, '');
+      
+      // Insert the new exhaustive import right after React import
+      content = content.replace(/import React(.*?)\r?\n/, `import React$1\n${ALL_ICONS}`);
+      
       fs.writeFileSync(path.join(DIR, file), content);
-      console.log(`Updated lucide-react in ${file}`);
+      console.log(`Replaced lucide-react in ${file}`);
     }
   });
 });
