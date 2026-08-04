@@ -416,7 +416,7 @@ export default function App() {
       {/* ── MAIN LAYOUT ── */}
       <div className="app-layout" style={{ flex: 1, overflow: 'hidden' }}>
         {/* Sidebar */}
-        <aside className="sidebar">
+        <aside className="sidebar" style={{ width: 320, padding: 16, gap: 16, background: '#0f172a', overflowY: 'auto' }}>
           {portalMode === 'bus' ? (
             <>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
