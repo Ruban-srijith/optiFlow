@@ -60,8 +60,11 @@ export default function Dashboard({ onNavigate, admin }) {
           ambulances: ambs.length || 4,
           icuBeds: totalIcuBeds,
         });
-      } catch (_) {}
-      setLoading(false);
+      } catch (err) {
+        console.warn('Dashboard load warning:', err.message);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [isAmbulanceAdmin]);
