@@ -231,7 +231,7 @@ export default function App() {
   if (['superadmin', 'transit_admin', 'ambulance_admin'].includes(passengerUser.role)) {
     const renderAdminPage = () => {
       switch (adminPage) {
-        case 'dashboard': return <DashboardAdmin onNavigate={setAdminPage} />;
+        case 'dashboard': return <DashboardAdmin onNavigate={setAdminPage} admin={passengerUser} />;
         case 'users': return <UserManagementPage />;
         case 'routes': return <RoutesPage />;
         case 'conductors': return <ConductorsPage />;
@@ -240,7 +240,7 @@ export default function App() {
         case 'ambulance_fleet': return <AmbulanceFleetPage />;
         case 'emergency_calls': return <EmergencyCallsPage />;
         case 'traffic_control': return <TrafficControlPageAdmin />;
-        default: return <DashboardAdmin onNavigate={setAdminPage} />;
+        default: return <DashboardAdmin onNavigate={setAdminPage} admin={passengerUser} />;
       }
     };
 

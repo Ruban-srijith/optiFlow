@@ -54,7 +54,7 @@ export default function App() {
 
   const renderPage = () => {
     switch (page) {
-      case 'dashboard': return <Dashboard onNavigate={setPage} />;
+      case 'dashboard': return <Dashboard onNavigate={setPage} admin={admin} />;
       case 'users': return <UserManagementPage />;
       case 'routes': return <RoutesPage />;
       case 'conductors': return <ConductorsPage />;
@@ -63,7 +63,7 @@ export default function App() {
       case 'ambulance_fleet': return <AmbulanceFleetPage />;
       case 'emergency_calls': return <EmergencyCallsPage />;
       case 'traffic_control': return <TrafficControlPage />;
-      default: return <Dashboard onNavigate={setPage} />;
+      default: return <Dashboard onNavigate={setPage} admin={admin} />;
     }
   };
 
