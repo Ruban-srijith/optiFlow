@@ -356,6 +356,36 @@ export default function ConductorDashboard({ conductor, onLogout }) {
           bus_id: selectedBusId,
           coordinates: [longitude, latitude],
         });
+
+        // Auto-detect closest stop on conductor's assigned route
+        if (selectedBus?.route_stops?.length) {
+          const STOP_COORDS_MAP = {
+            101: { lat: 11.0020, lng: 77.0500 }, 102: { lat: 10.9980, lng: 77.0320 },
+            103: { lat: 10.9990, lng: 76.9850 }, 104: { lat: 11.0080, lng: 76.9720 },
+            105: { lat: 11.0168, lng: 76.9558 }, 106: { lat: 11.0120, lng: 76.9380 },
+            107: { lat: 11.0140, lng: 76.9030 }, 108: { lat: 11.0450, lng: 76.8520 },
+            201: { lat: 11.0360, lng: 76.9710 }, 202: { lat: 11.0210, lng: 76.9580 },
+            203: { lat: 10.9960, lng: 76.9620 }, 204: { lat: 10.9910, lng: 76.9610 },
+            205: { lat: 10.9460, lng: 76.9330 }, 301: { lat: 10.9980, lng: 76.9680 },
+            302: { lat: 11.0260, lng: 76.9460 }, 303: { lat: 11.0780, lng: 76.9400 },
+          };
+
+          let closest = null;
+          let minDist = Infinity;
+          selectedBus.route_stops.forEach((rs) => {
+            const coords = STOP_COORDS_MAP[rs.stop_id];
+            if (coords) {
+              const dist = Math.hypot(latitude - coords.lat, longitude - coords.lng);
+              if (dist < minDist) {
+                minDist = dist;
+                closest = rs;
+              }
+            }
+          });
+          if (closest) {
+            setOriginStopId((prev) => prev || String(closest.stop_id));
+          }
+        }
       },
       (error) => {
         console.error('Bus GPS tracking error:', error.message);
@@ -759,7 +789,10 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                 <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1e293b', margin: 0 }}>Issue Ticket</h3>
 
                 <div>
-                  <label style={{ fontSize: 10, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 4 }}>FROM</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <label style={{ fontSize: 10, fontWeight: 700, color: '#64748b' }}>FROM (BOARDING STOP)</label>
+                    <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 700 }}>📍 Auto-detected from live location</span>
+                  </div>
                   <select
                     className="input-field"
                     value={originStopId}

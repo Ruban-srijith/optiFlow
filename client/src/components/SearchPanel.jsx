@@ -32,6 +32,7 @@ export default function SearchPanel({
   onSelectBus,
   onPayOnline,
   onBookSeat,
+  onLocateUser,
   userRole,
   BusCardComponent,
   error,
@@ -79,9 +80,25 @@ export default function SearchPanel({
 
         {/* Origin input */}
         <div style={{ position: 'relative', marginBottom: 10 }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 4 }}>
-            FROM
-          </label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>
+              FROM (STARTING STOP)
+            </label>
+            {onLocateUser && (
+              <button
+                type="button"
+                onClick={onLocateUser}
+                style={{
+                  background: 'none', border: 'none', color: '#16a34a',
+                  fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 4
+                }}
+                title="Get nearest stop using your live GPS location"
+              >
+                <span>📍</span> Use Live GPS
+              </button>
+            )}
+          </div>
           <div style={{ position: 'relative' }}>
             <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', display: 'flex' }}>
               <MapPin size={16} color="#16a34a" />
