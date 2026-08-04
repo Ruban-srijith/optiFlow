@@ -1,4 +1,5 @@
 import React from 'react';
+import { BarChart, Users, Activity, PhoneCall, Bus, CreditCard, Navigation, ShieldAlert, LogOut } from 'lucide-react';
 
 export default function Sidebar({ page, setPage, admin, onLogout }) {
   const role = admin?.role || 'superadmin';
