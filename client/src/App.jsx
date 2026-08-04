@@ -11,6 +11,20 @@ import PassengerLogin from './components/PassengerLogin';
 import { useSocket } from './hooks/useSocket';
 import { searchBuses, fetchAllBuses, fetchAmbulances, fetchHospitals } from './services/api';
 
+// Unified imports for Single-Login Experience
+import ConductorDashboard from './components/ConductorDashboard';
+import SidebarAdmin from './components/admin/Sidebar';
+import DashboardAdmin from './components/admin/Dashboard';
+import UserManagementPage from './components/admin/UserManagementPage';
+import RoutesPage from './components/admin/RoutesPage';
+import ConductorsPage from './components/admin/ConductorsPage';
+import BookingsPageAdmin from './components/admin/BookingsPage';
+import RevenuePage from './components/admin/RevenuePage';
+import AmbulanceFleetPage from './components/admin/AmbulanceFleetPage';
+import EmergencyCallsPage from './components/admin/EmergencyCallsPage';
+import TrafficControlPageAdmin from './components/admin/TrafficControlPage';
+
+
 export default function App() {
   const [passengerUser, setPassengerUser] = useState(() => {
     const stored = localStorage.getItem('passenger_info');
@@ -33,6 +47,9 @@ export default function App() {
   const [ambulances, setAmbulances] = useState([]);
   const [hospitals, setHospitals] = useState([]);
   const [selectedAmbulance, setSelectedAmbulance] = useState(null);
+
+  // Admin routing state
+  const [adminPage, setAdminPage] = useState('dashboard');
 
   // Booking states
   const [bookingBus, setBookingBus] = useState(null);
@@ -119,6 +136,70 @@ export default function App() {
 
   if (!passengerUser) {
     return <PassengerLogin onLoginSuccess={setPassengerUser} />;
+  }
+
+  // 1. Conductor & Ambulance Driver view redirection
+  if (['conductor', 'ambulance_driver'].includes(passengerUser.role)) {
+    return (
+      <ConductorDashboard
+        conductor={passengerUser}
+        onLogout={handlePassengerLogout}
+      />
+    );
+  }
+
+  // 2. Admin Roles view redirection (superadmin, transit_admin, ambulance_admin)
+  if (['superadmin', 'transit_admin', 'ambulance_admin'].includes(passengerUser.role)) {
+    const renderAdminPage = () => {
+      switch (adminPage) {
+        case 'dashboard': return <DashboardAdmin onNavigate={setAdminPage} />;
+        case 'users': return <UserManagementPage />;
+        case 'routes': return <RoutesPage />;
+        case 'conductors': return <ConductorsPage />;
+        case 'bookings': return <BookingsPageAdmin />;
+        case 'revenue': return <RevenuePage />;
+        case 'ambulance_fleet': return <AmbulanceFleetPage />;
+        case 'emergency_calls': return <EmergencyCallsPage />;
+        case 'traffic_control': return <TrafficControlPageAdmin />;
+        default: return <DashboardAdmin onNavigate={setAdminPage} />;
+      }
+    };
+
+    const adminPageTitles = {
+      dashboard: { title: 'Dashboard', sub: 'Transit & emergency fleet overview' },
+      users: { title: 'User Hierarchy', sub: 'Manage roles, admins, drivers, and conductors' },
+      routes: { title: 'Bus Routes', sub: 'Manage bus routes and stops' },
+      conductors: { title: 'Conductors', sub: 'Manage conductor accounts and assignments' },
+      bookings: { title: 'Commuter Bookings', sub: 'Manage passenger seat reservations' },
+      revenue: { title: 'Revenue', sub: 'Collection analytics' },
+      ambulance_fleet: { title: 'Ambulance Fleet', sub: 'Emergency medical unit management' },
+      emergency_calls: { title: 'Emergency Dispatch', sub: 'Hotline calls and Green Corridor overrides' },
+      traffic_control: { title: 'Traffic Signal Override', sub: 'Coimbatore junction controls and manual overrides' },
+    };
+
+    return (
+      <div className="admin-layout" style={{ display: 'flex', height: '100vh', background: '#f8fafc' }}>
+        <SidebarAdmin page={adminPage} setPage={setAdminPage} admin={passengerUser} onLogout={handlePassengerLogout} />
+        <div className="admin-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {/* Top bar */}
+          <header className="admin-navbar" style={{ padding: '16px 24px', background: '#ffffff', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', margin: 0 }}>{adminPageTitles[adminPage]?.title}</h2>
+              <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{adminPageTitles[adminPage]?.sub}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+              <span style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>
+                Unified Single-Portal ({passengerUser.role})
+              </span>
+            </div>
+          </header>
+          <main className="admin-main" style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
+            {renderAdminPage()}
+          </main>
+        </div>
+      </div>
+    );
   }
 
   return (
