@@ -10,6 +10,8 @@ const ticketRoutes = require('./routes/ticketRoutes');
 const authRoutes = require('./routes/authRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const ambulanceRoutes = require('./routes/ambulanceRoutes');
+const driverRoutes = require('./routes/driverRoutes');
 
 // ---------------------------------------------------------------------------
 // APP SETUP
@@ -17,7 +19,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 const server = http.createServer(app);
 
-// Allow both passenger (5173) and conductor (5174) origins
+// Allow both passenger (5173), conductor (5174), and admin (5175) origins
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
   process.env.CONDUCTOR_URL || 'http://localhost:5174',
@@ -32,7 +34,8 @@ const io = new Server(server, {
   },
 });
 
-// Inject io into routers
+// Inject io into app and routers
+app.set('io', io);
 ticketRoutes.setIO(io);
 paymentRoutes.setIO(io);
 
@@ -61,6 +64,8 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ambulances', ambulanceRoutes);
+app.use('/api/driver', driverRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -91,8 +96,25 @@ io.on('connection', (socket) => {
       );
       io.emit('bus_position', { bus_id, coordinates });
     } catch (err) {
-      console.error('Location update error:', err.message);
+      console.error('Bus location update error:', err.message);
     }
+  });
+
+  socket.on('ambulance_location_update', async ({ ambulance_id, coordinates, status }) => {
+    try {
+      const Ambulance = require('./models/Ambulance');
+      const updateData = { current_location: { type: 'Point', coordinates } };
+      if (status) updateData.status = status;
+
+      await Ambulance.findOneAndUpdate({ ambulance_id }, updateData);
+      io.emit('ambulance_position', { ambulance_id, coordinates, status });
+    } catch (err) {
+      console.error('Ambulance location update error:', err.message);
+    }
+  });
+
+  socket.on('green_corridor_toggle', ({ request_id, active }) => {
+    io.emit('green_corridor_update', { request_id, active });
   });
 
   socket.on('disconnect', () => {
@@ -101,24 +123,27 @@ io.on('connection', (socket) => {
 });
 
 // ---------------------------------------------------------------------------
-// MONGODB + SERVER START
+// SERVER START & MONGODB CONNECTION
 // ---------------------------------------------------------------------------
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ MongoDB connected — optiflow');
-    server.listen(PORT, () => {
-      console.log(`🚀 OptiFlow API  →  http://localhost:${PORT}`);
-      console.log(`🗺️  Passenger App  →  ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
-      console.log(`💳 Conductor App  →  ${process.env.CONDUCTOR_URL || 'http://localhost:5174'}`);
-      console.log(`🔌 Socket.io ready`);
+server.listen(PORT, () => {
+  console.log(`🚀 OptiFlow API  →  http://localhost:${PORT}`);
+  console.log(`🗺️  Passenger App  →  ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
+  console.log(`💳 Conductor App  →  ${process.env.CONDUCTOR_URL || 'http://localhost:5174'}`);
+  console.log(`🔌 Socket.io ready`);
+});
+
+if (process.env.MONGO_URI || true) {
+  mongoose
+    .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/optiflow')
+    .then(() => {
+      console.log('✅ MongoDB connected — optiflow');
+    })
+    .catch((err) => {
+      console.warn('⚠️  MongoDB connection notice:', err.message);
+      console.warn('💡 OptiFlow API is running with in-memory dev OTP authentication fallback.');
     });
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
-  });
+}
 
 module.exports = { io };

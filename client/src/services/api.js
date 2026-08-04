@@ -30,4 +30,14 @@ export const fetchStops = () => api.get('/buses/stops');
  */
 export const issueTicket = (payload) => api.post('/tickets/issue', payload);
 
+/**
+ * Ambulance & Emergency API Endpoints
+ */
+export const fetchAmbulances = () => api.get('/ambulances');
+export const fetchHospitals = () => api.get('/ambulances/hospitals');
+export const createEmergencyRequest = (payload) => api.post('/ambulances/request', payload);
+export const fetchEmergencyRequests = () => api.get('/ambulances/requests');
+export const updateEmergencyStatus = (requestId, payload) =>
+  api.patch(`/ambulances/request/${requestId}/status`, payload);
+
 export default api;

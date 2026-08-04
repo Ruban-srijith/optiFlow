@@ -30,6 +30,12 @@ api.interceptors.response.use(
 export const login = (username, password) =>
   api.post('/auth/login', { username, password });
 
+export const sendOtp = (phone_number, requested_role = 'conductor') =>
+  api.post('/auth/send-otp', { phone_number, requested_role });
+
+export const verifyOtp = (phone_number, otp) =>
+  api.post('/auth/verify-otp', { phone_number, otp });
+
 export const getMe = () => api.get('/auth/me');
 
 export const fetchAllBuses = () => api.get('/buses');

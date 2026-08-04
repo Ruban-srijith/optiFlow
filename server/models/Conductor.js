@@ -6,6 +6,7 @@ const conductorSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password_hash: { type: String, required: true },
     full_name: { type: String, required: true },
+    phone_number: { type: String, trim: true, default: null },
     employee_id: { type: String, required: true, unique: true },
     assigned_bus_id: { type: String, default: null }, // e.g. "TN-38-N-1234"
     is_active: { type: Boolean, default: true },

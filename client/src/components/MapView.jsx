@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, Circle, useMap } from 'react-leaflet';
-import { Bus } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -17,9 +16,6 @@ const STOP_COORDS_LATNG = {
   302: [11.0279, 76.9496], 303: [11.0624, 76.9481],
 };
 
-/**
- * Decode Google Maps encoded polyline into [lat, lng] array
- */
 function decodePolyline(encoded) {
   if (!encoded) return [];
   const points = [];
@@ -36,9 +32,6 @@ function decodePolyline(encoded) {
   return points;
 }
 
-/**
- * Generate a simple straight-line path between stops
- */
 function buildFallbackPath(routeStops) {
   return routeStops
     .filter((rs) => STOP_COORDS_LATNG[rs.stop_id])
@@ -69,6 +62,52 @@ const createBusIcon = (freeSeats = 10, capacity = 40) => {
   });
 };
 
+const createAmbulanceIcon = (status = 'available') => {
+  const isEnRoute = status === 'en_route' || status === 'transporting';
+  const color = isEnRoute ? '#dc2626' : '#2563eb';
+  const html = `
+    <div style="width: 46px; height: 46px; position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="
+        position: absolute; width: 44px; height: 44px; borderRadius: 50%;
+        background: ${color}; opacity: 0.2; animation: pulse 1.2s infinite;
+      "></div>
+      <div style="
+        width: 36px; height: 36px; borderRadius: 50%; background: #ffffff;
+        border: 2px solid ${color}; display: flex; align-items: center; justify-content: center;
+        boxShadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 20px;
+      ">
+        🚑
+      </div>
+    </div>
+  `;
+  return L.divIcon({
+    html,
+    className: 'custom-ambulance-icon',
+    iconSize: [46, 46],
+    iconAnchor: [23, 23],
+    popupAnchor: [0, -23],
+  });
+};
+
+const createHospitalIcon = (name) => {
+  const html = `
+    <div style="
+      width: 34px; height: 34px; borderRadius: 8px; background: #dc2626;
+      border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center;
+      boxShadow: 0 4px 12px rgba(220,38,38,0.3); font-weight: 800; color: #ffffff; font-size: 16px;
+    ">
+      🏥
+    </div>
+  `;
+  return L.divIcon({
+    html,
+    className: 'custom-hospital-icon',
+    iconSize: [34, 34],
+    iconAnchor: [17, 17],
+    popupAnchor: [0, -17],
+  });
+};
+
 const createMarkerIcon = (label, color) => {
   const html = `
     <div style="position: relative; width: 32px; height: 32px;">
@@ -90,7 +129,6 @@ const createMarkerIcon = (label, color) => {
 function MapResizer() {
   const map = useMap();
   useEffect(() => {
-    // Trigger invalidateSize after a slight delay to ensure the DOM layout has settled, especially on mobile.
     setTimeout(() => {
       if (map) map.invalidateSize();
     }, 200);
@@ -105,17 +143,21 @@ function MapResizer() {
 }
 
 export default function MapView({
+  portalMode = 'bus',
   selectedBus,
-  busPositions,
+  busPositions = {},
   allBuses = [],
-  busUpdates,
+  busUpdates = {},
   originStop,
   destinationStop,
+  ambulances = [],
+  hospitals = [],
+  activeEmergency,
 }) {
   const [activeMarker, setActiveMarker] = useState(null);
   const mapRef = useRef(null);
 
-  // Build polyline path
+  // Build polyline path for bus
   let polylinePath = [];
   if (selectedBus) {
     if (selectedBus.polyline) {
@@ -125,14 +167,21 @@ export default function MapView({
     }
   }
 
-  // Pan to selected bus using Leaflet map instance
+  // Green Corridor emergency path between Gandhipuram and KMCH Hospital
+  const greenCorridorPath = [
+    [11.0168, 76.9629], // Gandhipuram
+    [11.0264, 77.0084], // Peelamedu
+    [11.0345, 77.0425], // KMCH Hospital
+  ];
+
+  // Pan map when selection changes
   useEffect(() => {
-    if (!mapRef.current || !selectedBus) return;
-    const pos = busPositions[selectedBus.bus_id];
-    if (pos) {
-      mapRef.current.flyTo([pos[1], pos[0]], 15, { animate: true, duration: 1 });
+    if (!mapRef.current) return;
+    if (portalMode === 'bus' && selectedBus) {
+      const pos = busPositions[selectedBus.bus_id];
+      if (pos) mapRef.current.flyTo([pos[1], pos[0]], 15, { animate: true });
     }
-  }, [selectedBus, busPositions]);
+  }, [selectedBus, busPositions, portalMode]);
 
   return (
     <MapContainer
@@ -148,88 +197,119 @@ export default function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
-      {/* Route polyline */}
-      {polylinePath.length > 0 && (
+      {/* Route polyline for buses */}
+      {portalMode === 'bus' && polylinePath.length > 0 && (
         <Polyline
           positions={polylinePath}
           pathOptions={{ color: '#16a34a', weight: 5, opacity: 0.9 }}
         />
       )}
 
-      {/* Origin marker */}
-      {originStop && (
+      {/* Priority Green Corridor Polyline for Ambulance */}
+      {portalMode === 'ambulance' && activeEmergency?.green_corridor_active && (
+        <Polyline
+          positions={greenCorridorPath}
+          pathOptions={{ color: '#22c55e', weight: 8, opacity: 0.9, dashArray: '10, 10' }}
+        />
+      )}
+
+      {/* Bus Stops / Origin / Destination */}
+      {portalMode === 'bus' && originStop && (
         <Marker
           position={[originStop.location.coordinates[1], originStop.location.coordinates[0]]}
           icon={createMarkerIcon('A', '#16a34a')}
         />
       )}
-
-      {/* Destination marker */}
-      {destinationStop && (
+      {portalMode === 'bus' && destinationStop && (
         <Marker
           position={[destinationStop.location.coordinates[1], destinationStop.location.coordinates[0]]}
           icon={createMarkerIcon('B', '#1e293b')}
         />
       )}
 
-      {/* Forecast stop markers */}
-      {selectedBus?.forecast?.map((f, idx) => {
-        const pos = STOP_COORDS_LATNG[f.stop_id];
-        if (!pos) return null;
-        const isGood = f.predicted_free_seats > 10;
-        const isWarn = f.predicted_free_seats > 4;
-        return (
-          <Circle
-            key={f.stop_id}
-            center={pos}
-            radius={120}
-            pathOptions={{
-              fillColor: isGood ? '#16a34a' : isWarn ? '#f59e0b' : '#ef4444',
-              fillOpacity: 0.25,
-              color: isGood ? '#16a34a' : '#f59e0b',
-              weight: 2,
-              opacity: 0.8,
-            }}
-          />
-        );
-      })}
-
-      {/* Live bus markers */}
-      {allBuses.map((bus) => {
-        const livePos = busPositions[bus.bus_id];
-        const liveData = busUpdates?.[bus.bus_id];
-        const freeSeats = liveData?.free_seats ?? bus.free_seats ?? 20;
-        if (!livePos) return null;
-
-        const position = [livePos[1], livePos[0]];
-
-        return (
+      {/* Hospital Markers */}
+      {portalMode === 'ambulance' &&
+        hospitals.map((h) => (
           <Marker
-            key={bus.bus_id}
-            position={position}
-            icon={createBusIcon(freeSeats, bus.seating_capacity)}
-            eventHandlers={{ click: () => setActiveMarker(bus.bus_id) }}
-            zIndexOffset={100}
+            key={h.hospital_id || h.name}
+            position={[h.location.coordinates[1], h.location.coordinates[0]]}
+            icon={createHospitalIcon(h.name)}
           >
-            <Popup onClose={() => setActiveMarker(null)}>
-              <div style={{ fontFamily: 'Inter, sans-serif', minWidth: 160, padding: '4px 0', margin: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: '#1e293b', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Bus size={16} /> Route {bus.bus_number}
-                </div>
-                <div style={{ fontSize: 12, color: '#64748b', margin: '0 0 8px 0' }}>
-                  {bus.route_name}
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                  <InfoStat label="Free Seats" value={freeSeats} color="#16a34a" />
-                  <InfoStat label="Passengers" value={liveData?.current_passengers ?? '—'} color="#1e293b" />
-                  <InfoStat label="Standing" value={liveData?.standing_passengers ?? 0} color="#f59e0b" />
-                  <InfoStat label="Capacity" value={bus.seating_capacity} color="#64748b" />
+            <Popup>
+              <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
+                <strong style={{ color: '#dc2626', fontSize: 13 }}>🏥 {h.name}</strong>
+                <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0' }}>{h.address}</p>
+                <div style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>
+                  ICU Beds Available: {h.icu_beds_available}
                 </div>
               </div>
             </Popup>
           </Marker>
-        );
-      })}
+        ))}
+
+      {/* Ambulance Markers */}
+      {portalMode === 'ambulance' &&
+        ambulances.map((amb) => {
+          const coords = amb.current_location?.coordinates || [76.9629, 11.0168];
+          return (
+            <Marker
+              key={amb.ambulance_id}
+              position={[coords[1], coords[0]]}
+              icon={createAmbulanceIcon(amb.status)}
+            >
+              <Popup>
+                <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: '#dc2626' }}>
+                    🚑 {amb.vehicle_number}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#475569' }}>{amb.hospital_name}</div>
+                  <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+                    Driver: {amb.driver_name} ({amb.driver_phone})
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', marginTop: 4 }}>
+                    Status: {amb.status.toUpperCase()}
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+
+      {/* Live bus markers */}
+      {portalMode === 'bus' &&
+        allBuses.map((bus) => {
+          const livePos = busPositions[bus.bus_id];
+          const liveData = busUpdates?.[bus.bus_id];
+          const freeSeats = liveData?.free_seats ?? bus.free_seats ?? 20;
+          if (!livePos) return null;
+
+          const position = [livePos[1], livePos[0]];
+
+          return (
+            <Marker
+              key={bus.bus_id}
+              position={position}
+              icon={createBusIcon(freeSeats, bus.seating_capacity)}
+              eventHandlers={{ click: () => setActiveMarker(bus.bus_id) }}
+              zIndexOffset={100}
+            >
+              <Popup onClose={() => setActiveMarker(null)}>
+                <div style={{ fontFamily: 'Inter, sans-serif', minWidth: 160, padding: '4px 0', margin: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: '#1e293b', margin: '0 0 6px 0' }}>
+                    🚌 Route {bus.bus_number}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#64748b', margin: '0 0 8px 0' }}>
+                    {bus.route_name}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    <InfoStat label="Free Seats" value={freeSeats} color="#16a34a" />
+                    <InfoStat label="Passengers" value={liveData?.current_passengers ?? '—'} color="#1e293b" />
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
     </MapContainer>
   );
 }

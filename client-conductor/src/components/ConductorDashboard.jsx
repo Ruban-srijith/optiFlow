@@ -262,6 +262,11 @@ function TicketRow({ ticket }) {
 
 // ─── Main Dashboard ────────────────────────────────────────────────────────
 export default function ConductorDashboard({ conductor, onLogout }) {
+  const [driverRole, setDriverRole] = useState('conductor'); // 'conductor' | 'ambulance_driver'
+  const [ambulanceId, setAmbulanceId] = useState('TN-38-AM-1081');
+  const [ambStatus, setAmbStatus] = useState('available');
+  const [ambGpsActive, setAmbGpsActive] = useState(false);
+
   const [buses, setBuses] = useState([]);
   const [selectedBusId, setSelectedBusId] = useState(conductor?.assigned_bus_id || '');
   const [selectedBus, setSelectedBus] = useState(null);
@@ -276,6 +281,35 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
   const { busUpdates, connected, socketRef } = useSocket();
   const [gpsActive, setGpsActive] = useState(false);
+
+  // Broadcast Ambulance location when in ambulance mode
+  const handleToggleAmbulanceGps = () => {
+    if (ambGpsActive) {
+      setAmbGpsActive(false);
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setAmbGpsActive(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        socketRef.current?.emit('ambulance_location_update', {
+          ambulance_id: ambulanceId,
+          coordinates: [longitude, latitude],
+          status: ambStatus,
+        });
+      },
+      (err) => {
+        console.error('Ambulance GPS error:', err);
+        setAmbGpsActive(false);
+      }
+    );
+  };
 
   useEffect(() => {
     // Only start tracking once the socket is connected and a bus is selected
@@ -796,6 +830,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
           )}
         </div>
       </div>
+      )}
 
       <PaymentQRModal
         qrDetails={qrData}

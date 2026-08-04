@@ -6,6 +6,9 @@ import Dashboard from './components/Dashboard';
 import RoutesPage from './components/RoutesPage';
 import ConductorsPage from './components/ConductorsPage';
 import RevenuePage from './components/RevenuePage';
+import AmbulanceFleetPage from './components/AmbulanceFleetPage';
+import EmergencyCallsPage from './components/EmergencyCallsPage';
+import UserManagementPage from './components/UserManagementPage';
 import { getMe } from './services/api';
 
 export default function App() {
@@ -39,7 +42,7 @@ export default function App() {
   if (checking) {
     return (
       <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, color: '#64748b', background: '#f8fafc' }}>
-        <span style={{ fontSize: 32 }}>🚌</span>
+        <span style={{ fontSize: 32 }}>⚡</span>
         <p style={{ fontSize: 14 }}>Verifying session...</p>
       </div>
     );
@@ -50,18 +53,24 @@ export default function App() {
   const renderPage = () => {
     switch (page) {
       case 'dashboard': return <Dashboard onNavigate={setPage} />;
+      case 'users': return <UserManagementPage />;
       case 'routes': return <RoutesPage />;
       case 'conductors': return <ConductorsPage />;
       case 'revenue': return <RevenuePage />;
+      case 'ambulance_fleet': return <AmbulanceFleetPage />;
+      case 'emergency_calls': return <EmergencyCallsPage />;
       default: return <Dashboard onNavigate={setPage} />;
     }
   };
 
   const pageTitles = {
-    dashboard: { title: 'Dashboard', sub: 'Fleet overview' },
-    routes: { title: 'Routes', sub: 'Manage bus routes and stops' },
+    dashboard: { title: 'Dashboard', sub: 'Transit & emergency fleet overview' },
+    users: { title: 'User Hierarchy', sub: 'Manage roles, admins, drivers, and conductors' },
+    routes: { title: 'Bus Routes', sub: 'Manage bus routes and stops' },
     conductors: { title: 'Conductors', sub: 'Manage conductor accounts and assignments' },
     revenue: { title: 'Revenue', sub: 'Collection analytics' },
+    ambulance_fleet: { title: 'Ambulance Fleet', sub: 'Emergency medical unit management' },
+    emergency_calls: { title: 'Emergency Dispatch', sub: 'Hotline calls and Green Corridor overrides' },
   };
 
   return (
@@ -77,7 +86,9 @@ export default function App() {
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
-            <span style={{ fontSize: 12, color: '#64748b' }}>Live System</span>
+            <span style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>
+              RBAC Enabled ({admin.role})
+            </span>
           </div>
         </header>
         <main className="admin-main">

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:5000';
+const SERVER_URL = 'http://localhost:5001';
 
 /**
  * useSocket — connects to the OptiFlow Socket.io server and

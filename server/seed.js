@@ -6,6 +6,9 @@ const Bus = require('./models/Bus');
 const Ticket = require('./models/Ticket');
 const Conductor = require('./models/Conductor');
 const Payment = require('./models/Payment');
+const Hospital = require('./models/Hospital');
+const Ambulance = require('./models/Ambulance');
+const EmergencyRequest = require('./models/EmergencyRequest');
 
 // ---------------------------------------------------------------------------
 // STOP DATA
@@ -47,6 +50,114 @@ const stops = [
   { stop_id: 418, stop_name: 'Podanur', location: { type: 'Point', coordinates: [76.9829, 10.9631] } },
   { stop_id: 419, stop_name: 'Vellalore', location: { type: 'Point', coordinates: [77.0095, 10.9566] } },
   { stop_id: 420, stop_name: 'Tidel Park', location: { type: 'Point', coordinates: [77.0229, 11.0267] } },
+];
+
+// ---------------------------------------------------------------------------
+// EMERGENCY HOSPITALS & AMBULANCES
+// ---------------------------------------------------------------------------
+const hospitals = [
+  {
+    hospital_id: 'HOSP-01',
+    name: 'Kovai Medical Center & Hospital (KMCH)',
+    address: 'Avinashi Road, Civil Aerodrome Post, Coimbatore',
+    contact_phone: '+91 422 4323800',
+    location: { type: 'Point', coordinates: [77.0425, 11.0345] },
+    icu_beds_available: 18,
+    trauma_center_level: 'Level 1 Trauma Center',
+    ambulances_stationed: 8,
+  },
+  {
+    hospital_id: 'HOSP-02',
+    name: 'PSG Hospitals',
+    address: 'Peelamedu, Avinashi Road, Coimbatore',
+    contact_phone: '+91 422 2570170',
+    location: { type: 'Point', coordinates: [77.0084, 11.0264] },
+    icu_beds_available: 14,
+    trauma_center_level: 'Level 1 Trauma Center',
+    ambulances_stationed: 6,
+  },
+  {
+    hospital_id: 'HOSP-03',
+    name: 'Coimbatore Medical College Hospital (CMCH)',
+    address: 'Trichy Road, Near Town Hall, Coimbatore',
+    contact_phone: '108',
+    location: { type: 'Point', coordinates: [76.9653, 11.0046] },
+    icu_beds_available: 25,
+    trauma_center_level: 'Government Level 1 Emergency',
+    ambulances_stationed: 12,
+  },
+  {
+    hospital_id: 'HOSP-04',
+    name: 'Ganga Hospital',
+    address: '313, Mettupalayam Road, Saibaba Colony, Coimbatore',
+    contact_phone: '+91 422 2485000',
+    location: { type: 'Point', coordinates: [76.9496, 11.0279] },
+    icu_beds_available: 10,
+    trauma_center_level: 'Orthopedic & Trauma Care',
+    ambulances_stationed: 4,
+  },
+];
+
+const ambulances = [
+  {
+    ambulance_id: 'TN-38-AM-1081',
+    vehicle_number: '108-EMG-1',
+    driver_name: 'Suresh Kumar',
+    driver_phone: '+91 98421 12345',
+    hospital_name: 'Kovai Medical Center & Hospital (KMCH)',
+    type: 'ALS',
+    status: 'available',
+    current_location: { type: 'Point', coordinates: [77.0425, 11.0345] },
+    equipment: ['Defibrillator', 'Ventilator', 'ECG Monitor', 'Oxygen Cylinder'],
+    battery_level: 100,
+  },
+  {
+    ambulance_id: 'TN-38-AM-1082',
+    vehicle_number: '108-ICU-2',
+    driver_name: 'Dinesh Karthik',
+    driver_phone: '+91 98422 67890',
+    hospital_name: 'Coimbatore Medical College Hospital (CMCH)',
+    type: 'ICU',
+    status: 'available',
+    current_location: { type: 'Point', coordinates: [76.9653, 11.0046] },
+    equipment: ['Advanced ICU Setup', 'Infusion Pumps', 'Suction Machine'],
+    battery_level: 95,
+  },
+  {
+    ambulance_id: 'TN-38-AM-1083',
+    vehicle_number: '108-CARDIAC-3',
+    driver_name: 'M. Manikandan',
+    driver_phone: '+91 98423 54321',
+    hospital_name: 'PSG Hospitals',
+    type: 'ALS',
+    status: 'available',
+    current_location: { type: 'Point', coordinates: [77.0084, 11.0264] },
+    equipment: ['Cardiac Monitor', 'Resuscitator', 'Portable Oxygen'],
+    battery_level: 92,
+  },
+];
+
+const initialEmergencyRequests = [
+  {
+    request_id: 'EMG-884219',
+    patient_name: 'Karthik Subramanian',
+    contact_phone: '+91 99402 88123',
+    emergency_type: 'cardiac',
+    priority: 'critical',
+    pickup_location: {
+      name: 'Gandhipuram Bus Stand, Sector 2',
+      coordinates: [76.9629, 11.0168],
+    },
+    destination_hospital: {
+      name: 'Kovai Medical Center & Hospital (KMCH)',
+      coordinates: [77.0425, 11.0345],
+    },
+    status: 'en_route',
+    assigned_ambulance_id: 'TN-38-AM-1081',
+    green_corridor_active: true,
+    eta_minutes: 6,
+    notes: 'Severe chest pain, cardiac response team dispatched on Green Corridor',
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -134,6 +245,9 @@ async function seed() {
       Ticket.deleteMany(),
       Conductor.deleteMany(),
       Payment.deleteMany(),
+      Hospital.deleteMany(),
+      Ambulance.deleteMany(),
+      EmergencyRequest.deleteMany(),
     ]);
     console.log('🗑️  Cleared all collections');
 
@@ -142,6 +256,15 @@ async function seed() {
 
     await Bus.insertMany(buses);
     console.log(`✅ Seeded ${buses.length} buses (routes 1D, 3D, 11A)`);
+
+    await Hospital.insertMany(hospitals);
+    console.log(`✅ Seeded ${hospitals.length} emergency hospitals`);
+
+    await Ambulance.insertMany(ambulances);
+    console.log(`✅ Seeded ${ambulances.length} ambulances`);
+
+    await EmergencyRequest.insertMany(initialEmergencyRequests);
+    console.log(`✅ Seeded ${initialEmergencyRequests.length} emergency requests`);
 
     // Hash passwords and insert conductors
     const conductors = await Promise.all(
@@ -153,7 +276,7 @@ async function seed() {
     await Conductor.insertMany(conductors);
     console.log(`✅ Seeded ${conductors.length} conductor accounts`);
 
-    console.log('\n🚌 OptiFlow seed complete!\n');
+    console.log('\n🚌 OptiFlow Dual Portal seed complete!\n');
     console.log('Conductor Logins:');
     conductorPlain.forEach((c) =>
       console.log(`  ${c.username} / ${c.password}  →  ${c.full_name} (${c.assigned_bus_id})`)

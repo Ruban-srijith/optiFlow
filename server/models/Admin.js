@@ -6,7 +6,12 @@ const adminSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password_hash: { type: String, required: true },
     full_name: { type: String, required: true },
-    role: { type: String, default: 'superadmin', enum: ['superadmin'] },
+    phone_number: { type: String, trim: true, default: null },
+    role: { 
+      type: String, 
+      default: 'superadmin', 
+      enum: ['superadmin', 'transit_admin', 'ambulance_admin'] 
+    },
     is_active: { type: Boolean, default: true },
   },
   { timestamps: true }

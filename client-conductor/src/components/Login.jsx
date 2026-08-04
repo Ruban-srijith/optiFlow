@@ -1,18 +1,65 @@
 import React, { useState } from 'react';
-import { login } from '../services/api';
+import { login, sendOtp, verifyOtp } from '../services/api';
 
 /**
- * Login page for the Conductor App.
- * On success, stores JWT + conductor info in localStorage and calls onLogin().
+ * Login page for the Conductor App with Phone OTP & Password options.
  */
 export default function Login({ onLogin }) {
+  const [mode, setMode] = useState('otp'); // 'otp' or 'password'
+  
+  // Username/Password state
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  // OTP state
+  const [phone, setPhone] = useState('+919876543213');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [info, setInfo] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPass, setShowPass] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setInfo('');
+    try {
+      const res = await sendOtp(phone, 'conductor');
+      setOtpSent(true);
+      if (res.data.dev_otp) {
+        setOtpCode(res.data.dev_otp);
+        setInfo(`Dev OTP generated: ${res.data.dev_otp}`);
+      } else {
+        setInfo(`OTP sent to ${phone}`);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to send OTP.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await verifyOtp(phone, otpCode);
+      const { token, user } = res.data;
+      localStorage.setItem('conductor_token', token);
+      localStorage.setItem('conductor_info', JSON.stringify(user));
+      onLogin(user);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Invalid OTP code.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (!username || !password) {
       setError('Please enter your username and password');
@@ -46,77 +93,136 @@ export default function Login({ onLogin }) {
     >
       <div style={{ width: '100%', maxWidth: 420 }}>
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{ fontSize: 48, marginBottom: 8 }}>🚌</div>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1e293b' }}>
             Opti<span style={{ color: '#16a34a' }}>Flow</span>
           </h1>
           <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>
-            Conductor Portal — Pine Labs POS
+            Conductor Mobile & POS Portal
           </p>
         </div>
 
         {/* Login card */}
-        <div
-          className="card fade-in"
-          style={{ padding: 32 }}
-        >
-          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#1e293b' }}>
-            Sign In
-          </h2>
-          <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>
-            Enter your conductor credentials to access the dashboard.
-          </p>
+        <div className="card fade-in" style={{ padding: 28 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#f1f5f9', padding: 4, borderRadius: 8 }}>
+            <button
+              type="button"
+              style={{
+                flex: 1, padding: '8px 0', fontSize: 13, border: 'none', borderRadius: 6, cursor: 'pointer',
+                background: mode === 'otp' ? '#fff' : 'transparent',
+                fontWeight: mode === 'otp' ? 700 : 500,
+                color: mode === 'otp' ? '#16a34a' : '#64748b',
+                boxShadow: mode === 'otp' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              }}
+              onClick={() => { setMode('otp'); setError(''); setInfo(''); }}
+            >
+              📱 Phone OTP
+            </button>
+            <button
+              type="button"
+              style={{
+                flex: 1, padding: '8px 0', fontSize: 13, border: 'none', borderRadius: 6, cursor: 'pointer',
+                background: mode === 'password' ? '#fff' : 'transparent',
+                fontWeight: mode === 'password' ? 700 : 500,
+                color: mode === 'password' ? '#16a34a' : '#64748b',
+                boxShadow: mode === 'password' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              }}
+              onClick={() => { setMode('password'); setError(''); setInfo(''); }}
+            >
+              🔐 Username
+            </button>
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            {/* Username */}
-            <div style={{ marginBottom: 16 }}>
-              <label
-                htmlFor="login-username"
-                style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}
-              >
-                USERNAME
-              </label>
-              <div style={{ position: 'relative' }}>
-                <span
-                  style={{
-                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                    fontSize: 15, color: '#94a3b8',
-                  }}
+          {error && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#dc2626' }}>
+              ⚠️ {error}
+            </div>
+          )}
+
+          {info && (
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#1d4ed8' }}>
+              ℹ️ {info}
+            </div>
+          )}
+
+          {mode === 'otp' ? (
+            !otpSent ? (
+              <form onSubmit={handleSendOtp}>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>
+                    CONDUCTOR PHONE NUMBER
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 15, color: '#94a3b8' }}>
+                      📱
+                    </span>
+                    <input
+                      className="input-field"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+919876543213"
+                      style={{ paddingLeft: 36 }}
+                      required
+                    />
+                  </div>
+                </div>
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }} disabled={loading}>
+                  {loading ? <span className="spinner" /> : '📲 Send OTP Code'}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp}>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>
+                    ENTER 6-DIGIT OTP CODE
+                  </label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    maxLength={6}
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    placeholder="123456"
+                    style={{ letterSpacing: 6, fontSize: 20, textAlign: 'center', fontWeight: 'bold' }}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }} disabled={loading}>
+                  {loading ? <span className="spinner" /> : '✅ Verify & Login'}
+                </button>
+                <button
+                  type="button"
+                  style={{ width: '100%', marginTop: 10, background: 'none', border: 'none', color: '#64748b', fontSize: 13, cursor: 'pointer' }}
+                  onClick={() => setOtpSent(false)}
                 >
-                  👤
-                </span>
+                  ← Change Phone Number
+                </button>
+              </form>
+            )
+          ) : (
+            <form onSubmit={handlePasswordSubmit}>
+              <div style={{ marginBottom: 16 }}>
+                <label htmlFor="login-username" style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>
+                  USERNAME
+                </label>
                 <input
                   id="login-username"
                   className="input-field"
                   type="text"
-                  placeholder="e.g. conductor1"
+                  placeholder="conductor1"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  style={{ paddingLeft: 36 }}
                   autoComplete="username"
-                  autoFocus
+                  required
                 />
               </div>
-            </div>
 
-            {/* Password */}
-            <div style={{ marginBottom: 24 }}>
-              <label
-                htmlFor="login-password"
-                style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}
-              >
-                PASSWORD
-              </label>
-              <div style={{ position: 'relative' }}>
-                <span
-                  style={{
-                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                    fontSize: 15, color: '#94a3b8',
-                  }}
-                >
-                  🔒
-                </span>
+              <div style={{ marginBottom: 24 }}>
+                <label htmlFor="login-password" style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>
+                  PASSWORD
+                </label>
                 <input
                   id="login-password"
                   className="input-field"
@@ -124,62 +230,23 @@ export default function Login({ onLogin }) {
                   placeholder="Your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ paddingLeft: 36, paddingRight: 44 }}
                   autoComplete="current-password"
+                  required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPass((p) => !p)}
-                  style={{
-                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 15, color: '#94a3b8',
-                  }}
-                  tabIndex={-1}
-                >
-                  {showPass ? '🙈' : '👁️'}
-                </button>
               </div>
-            </div>
 
-            {/* Error */}
-            {error && (
-              <div
-                style={{
-                  background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8,
-                  padding: '10px 14px', marginBottom: 16,
-                  fontSize: 13, color: '#dc2626',
-                }}
-              >
-                ⚠️ {error}
-              </div>
-            )}
+              <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }} disabled={loading}>
+                {loading ? <span className="spinner" /> : '🔑 Sign In'}
+              </button>
+            </form>
+          )}
 
-            {/* Submit */}
-            <button
-              id="login-submit-btn"
-              type="submit"
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }}
-              disabled={loading}
-            >
-              {loading ? <span className="spinner" /> : '🔑'}
-              {loading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
-
-          {/* Hint for demo */}
-          <div
-            style={{
-              marginTop: 20, background: '#f0fdf4', border: '1px solid #bbf7d0',
-              borderRadius: 8, padding: '10px 14px',
-            }}
-          >
+          {/* Demo Hint */}
+          <div style={{ marginTop: 20, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '10px 14px' }}>
             <p style={{ fontSize: 12, color: '#15803d', fontWeight: 600, marginBottom: 4 }}>
-              Demo Credentials
+              Demo Phone Accounts
             </p>
-            <p style={{ fontSize: 12, color: '#166534' }}>conductor1 / conductor123 (Route 1D)</p>
-            <p style={{ fontSize: 12, color: '#166534' }}>conductor2 / conductor456 (Route 3D)</p>
-            <p style={{ fontSize: 12, color: '#166534' }}>conductor3 / conductor789 (Route 11A)</p>
+            <p style={{ fontSize: 12, color: '#166534' }}>📱 Conductor Phone: <b>+919876543213</b> (OTP: <b>123456</b>)</p>
           </div>
         </div>
 
