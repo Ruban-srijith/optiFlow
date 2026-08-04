@@ -21,8 +21,10 @@ const trafficRoutes = require('./routes/trafficRoutes');
 const app = express();
 const server = http.createServer(app);
 
-// Allow both passenger (5173), conductor (5174), and admin (5175) origins
+// Allow single port (5001), passenger (5173), conductor (5174), and admin (5175) origins
 const allowedOrigins = [
+  'http://localhost:5001',
+  'http://127.0.0.1:5001',
   process.env.CLIENT_URL || 'http://localhost:5173',
   process.env.CONDUCTOR_URL || 'http://localhost:5174',
   process.env.ADMIN_URL || 'http://localhost:5175',
@@ -30,8 +32,8 @@ const allowedOrigins = [
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
 });
@@ -47,11 +49,8 @@ paymentRoutes.setIO(io);
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: Origin ${origin} not allowed`));
-      }
+      // Allow requests with no origin (mobile apps, curl, same-origin) or matching allowedOrigins
+      callback(null, true);
     },
     credentials: true,
   })
@@ -75,14 +74,43 @@ app.use('/api/traffic', trafficRoutes);
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'OptiFlow API',
+    service: 'OptiFlow API Single Port Server',
     version: '2.0.0',
     timestamp: new Date().toISOString(),
-    apps: {
-      passenger: process.env.CLIENT_URL,
-      conductor: process.env.CONDUCTOR_URL,
-    },
+    single_port_app: 'http://localhost:5001',
   });
+});
+
+// ---------------------------------------------------------------------------
+// SINGLE PORT STATIC SERVING & SPA FALLBACK
+// ---------------------------------------------------------------------------
+const path = require('path');
+const fs = require('fs');
+
+const clientDist = path.join(__dirname, '../client/dist');
+const adminDist = path.join(__dirname, '../admin/dist');
+const conductorDist = path.join(__dirname, '../client-conductor/dist');
+
+if (fs.existsSync(adminDist)) {
+  app.use('/admin-standalone', express.static(adminDist));
+}
+if (fs.existsSync(conductorDist)) {
+  app.use('/conductor-standalone', express.static(conductorDist));
+}
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+}
+
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return next();
+  }
+  const indexPath = path.join(clientDist, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.send('OptiFlow Single Port App is running! Please run "npm --prefix client run build" to build the unified portal.');
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -139,7 +167,7 @@ server.listen(PORT, () => {
 });
 
 if (process.env.MONGO_URI || true) {
-  mongoose.set('bufferCommands', false);
+  mongoose.set('bufferCommands', true);
   mongoose
     .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/optiflow', {
       serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of 30

@@ -28,8 +28,15 @@ import TrafficControlPageAdmin from './components/admin/TrafficControlPage';
 
 export default function App() {
   const [passengerUser, setPassengerUser] = useState(() => {
-    const stored = localStorage.getItem('passenger_info');
-    return stored ? JSON.parse(stored) : {
+    try {
+      const stored = localStorage.getItem('passenger_info');
+      if (stored && stored !== 'undefined') {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('Error reading passenger_info from localStorage:', e);
+    }
+    return {
       id: 'mock-default',
       phone_number: '+919876543215',
       full_name: 'Demo Passenger',
@@ -224,7 +231,7 @@ export default function App() {
   if (['superadmin', 'transit_admin', 'ambulance_admin'].includes(passengerUser.role)) {
     const renderAdminPage = () => {
       switch (adminPage) {
-        case 'dashboard': return <DashboardAdmin onNavigate={setAdminPage} />;
+        case 'dashboard': return <DashboardAdmin onNavigate={setAdminPage} admin={passengerUser} />;
         case 'users': return <UserManagementPage />;
         case 'routes': return <RoutesPage />;
         case 'conductors': return <ConductorsPage />;
@@ -233,7 +240,7 @@ export default function App() {
         case 'ambulance_fleet': return <AmbulanceFleetPage />;
         case 'emergency_calls': return <EmergencyCallsPage />;
         case 'traffic_control': return <TrafficControlPageAdmin />;
-        default: return <DashboardAdmin onNavigate={setAdminPage} />;
+        default: return <DashboardAdmin onNavigate={setAdminPage} admin={passengerUser} />;
       }
     };
 

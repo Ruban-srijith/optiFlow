@@ -902,47 +902,15 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                 </div>
 
                 {selectedBus && (
-                  <>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#64748b', marginTop: 4 }}>
-                      <span>Live Occupancy:</span>
-                      <span style={{ fontWeight: 700, color: fillColor }}>{occupancy}/{capacity} Seats</span>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, marginTop: 4 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#475569' }}>
+                      <span style={{ fontWeight: 600 }}>Live Seat Availability:</span>
+                      <span style={{ fontWeight: 800, color: fillColor }}>{capacity - occupancy} Free Seats ({occupancy}/{capacity} Occupied)</span>
                     </div>
-
-                    <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-                      <div style={{ flex: 1 }}>
-                        <label style={{ fontSize: 9, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 4 }}>SEATED COUNT</label>
-                        <input
-                          type="number"
-                          min={0}
-                          max={capacity}
-                          value={seatedOverride}
-                          onChange={(e) => setSeatedOverride(Number(e.target.value))}
-                          className="input-field"
-                          style={{ padding: 6, fontSize: 12, textAlign: 'center' }}
-                        />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <label style={{ fontSize: 9, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 4 }}>STANDING COUNT</label>
-                        <input
-                          type="number"
-                          min={0}
-                          value={standingOverride}
-                          onChange={(e) => setStandingOverride(Number(e.target.value))}
-                          className="input-field"
-                          style={{ padding: 6, fontSize: 12, textAlign: 'center' }}
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={handleSaveOccupancy}
-                      disabled={savingOccupancy}
-                      className="btn-outline"
-                      style={{ width: '100%', fontSize: 11, padding: '8px 0', justifyContent: 'center', borderColor: '#16a34a', color: '#16a34a' }}
-                    >
-                      {savingOccupancy ? 'Updating overrides...' : 'Save Occupancy Overrides'}
-                    </button>
-                  </>
+                    <p style={{ fontSize: 10, color: '#94a3b8', margin: '4px 0 0 0' }}>
+                      Seat counts automatically update in real-time as tickets are issued at the POS terminal.
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

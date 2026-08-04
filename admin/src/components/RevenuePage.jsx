@@ -1,4 +1,3 @@
-import { Coins, Banknote, Smartphone } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { getRevenueStats } from '../services/api';
 
