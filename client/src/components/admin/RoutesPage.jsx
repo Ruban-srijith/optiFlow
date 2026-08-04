@@ -30,7 +30,7 @@ function CreateRouteModal({ stops, onClose, onCreated }) {
   return (
     <div className="modal-overlay">
       <div className="modal" style={{ maxWidth: 600 }}>
-        <div className="modal-title">🗺️ Create New Route</div>
+        <div className="modal-title"><Map size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Create New Route</div>
         {error && <div className="alert alert-error" style={{ marginBottom: 14 }}>{error}</div>}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="grid-2">
@@ -59,7 +59,7 @@ function CreateRouteModal({ stops, onClose, onCreated }) {
           </div>
 
           <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, padding: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 12 }}>📍 ROUTE STOPS</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 12 }}><MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> ROUTE STOPS</div>
             <RouteBuilder stops={stops} value={routeStops} onChange={setRouteStops} />
           </div>
 

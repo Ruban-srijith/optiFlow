@@ -32,10 +32,10 @@ export default function Dashboard({ onNavigate }) {
   if (loading) return <div style={{ padding: 40, color: '#64748b' }}>Loading dashboard...</div>;
 
   const statCards = [
-    { icon: '🗺️', label: 'Active Routes', value: stats.buses, bg: '#eef2ff', iconColor: '#4f46e5' },
-    { icon: '👨‍✈️', label: 'Conductors', value: stats.conductors, bg: '#f0fdf4', iconColor: '#16a34a' },
-    { icon: '🎫', label: 'Total Tickets', value: stats.tickets, bg: '#fffbeb', iconColor: '#d97706' },
-    { icon: '💰', label: 'Total Revenue', value: `₹${stats.revenue.toLocaleString()}`, bg: '#fdf4ff', iconColor: '#9333ea' },
+    { icon: <Map size={16} />, label: 'Active Routes', value: stats.buses, bg: '#eef2ff', iconColor: '#4f46e5' },
+    { icon: <UserSquare2 size={16} />, label: 'Conductors', value: stats.conductors, bg: '#f0fdf4', iconColor: '#16a34a' },
+    { icon: <Ticket size={16} />, label: 'Total Tickets', value: stats.tickets, bg: '#fffbeb', iconColor: '#d97706' },
+    { icon: <Coins size={16} />, label: 'Total Revenue', value: `₹${stats.revenue.toLocaleString()}`, bg: '#fdf4ff', iconColor: '#9333ea' },
   ];
 
   return (
@@ -88,8 +88,8 @@ export default function Dashboard({ onNavigate }) {
                     <div className="rev-bar-fill" style={{ width: `${pct}%`, background: '#16a34a' }} />
                   </div>
                   <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
-                    <span style={{ fontSize: 10, color: '#64748b' }}>💵 Cash ₹{r.cash?.total || 0}</span>
-                    <span style={{ fontSize: 10, color: '#4f46e5' }}>📲 Online ₹{r.online?.total || 0}</span>
+                    <span style={{ fontSize: 10, color: '#64748b' }}><Banknote size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Cash ₹{r.cash?.total || 0}</span>
+                    <span style={{ fontSize: 10, color: '#4f46e5' }}><Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Online ₹{r.online?.total || 0}</span>
                   </div>
                 </div>
               );

@@ -32,7 +32,7 @@ export default function EmergencyCallsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#dc2626', margin: 0 }}>
-            🚨 Emergency Hotline & Dispatch Calls
+            <Siren size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Emergency Hotline & Dispatch Calls
           </h1>
           <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>
             Live emergency hotline calls, priority dispatch tracking, and Green Corridor overrides.
@@ -78,7 +78,7 @@ export default function EmergencyCallsPage() {
                   <span style={{ fontSize: 12, color: '#64748b' }}>({req.contact_phone})</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#475569', marginBottom: 4 }}>
-                  📍 Pickup: <strong>{req.pickup_location?.name}</strong> → 🏥 Destination:{' '}
+                  <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Pickup: <strong>{req.pickup_location?.name}</strong> → <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination:{' '}
                   <strong>{req.destination_hospital?.name}</strong>
                 </div>
                 <div style={{ fontSize: 12, color: '#64748b' }}>

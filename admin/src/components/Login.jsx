@@ -122,7 +122,7 @@ export default function Login({ onLogin }) {
                 disabled={loading}
                 style={{ marginTop: 4, justifyContent: 'center', padding: '11px 0' }}
               >
-                {loading ? <span className="spinner" /> : '📲 Send OTP Code'}
+                {loading ? <span className="spinner" /> : '<Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Send OTP Code'}
               </button>
             </form>
           ) : (
@@ -196,8 +196,8 @@ export default function Login({ onLogin }) {
         <div style={{ marginTop: 20, padding: 12, borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0', fontSize: 11, color: '#64748b' }}>
           <div style={{ fontWeight: 600, color: '#334155', marginBottom: 4 }}>Demo Credentials & Phone Numbers:</div>
           <div>• 👑 <b>Super Admin:</b> +919876543210 (or superadmin / admin123)</div>
-          <div>• 🚌 <b>Transit Admin:</b> +919876543211 (or transitadmin / admin123)</div>
-          <div>• 🚑 <b>Ambulance Admin:</b> +919876543212 (or healthadmin / admin123)</div>
+          <div>• <Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> <b>Transit Admin:</b> +919876543211 (or transitadmin / admin123)</div>
+          <div>• <Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> <b>Ambulance Admin:</b> +919876543212 (or healthadmin / admin123)</div>
           <div style={{ marginTop: 4, color: '#0284c7' }}>Dev Mode OTP Code for all numbers: <b>123456</b></div>
         </div>
       </div>

@@ -26,7 +26,7 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
           className={`sidebar-item ${page === 'dashboard' ? 'active' : ''}`}
           onClick={() => setPage('dashboard')}
         >
-          <span className="icon">📊</span>
+          <span className="icon"><BarChart size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span>
           Overview Dashboard
         </button>
 
@@ -39,7 +39,7 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
               className={`sidebar-item ${page === 'users' ? 'active' : ''}`}
               onClick={() => setPage('users')}
             >
-              <span className="icon">👥</span>
+              <span className="icon"><Users size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span>
               Users & Hierarchy
             </button>
           </>
@@ -48,19 +48,19 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
         {isTransit && (
           <>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', padding: '16px 12px 4px 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              🚌 Govt Bus Transit
+              <Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Govt Bus Transit
             </div>
             <button className={`sidebar-item ${page === 'routes' ? 'active' : ''}`} onClick={() => setPage('routes')}>
-              <span className="icon">🗺️</span> Routes & Buses
+              <span className="icon"><Map size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Routes & Buses
             </button>
             <button className={`sidebar-item ${page === 'conductors' ? 'active' : ''}`} onClick={() => setPage('conductors')}>
-              <span className="icon">👨‍✈️</span> Conductors
+              <span className="icon"><UserSquare2 size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Conductors
             </button>
             <button className={`sidebar-item ${page === 'bookings' ? 'active' : ''}`} onClick={() => setPage('bookings')}>
-              <span className="icon">🎟️</span> Seat Bookings
+              <span className="icon"><Ticket size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Seat Bookings
             </button>
             <button className={`sidebar-item ${page === 'revenue' ? 'active' : ''}`} onClick={() => setPage('revenue')}>
-              <span className="icon">💰</span> Revenue Stats
+              <span className="icon"><Coins size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Revenue Stats
             </button>
           </>
         )}
@@ -68,16 +68,16 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
         {isAmbulance && (
           <>
             <div style={{ fontSize: 10, fontWeight: 700, color: '#f87171', padding: '16px 12px 4px 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              🚑 Ambulance Emergency
+              <Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance Emergency
             </div>
             <button className={`sidebar-item ${page === 'ambulance_fleet' ? 'active' : ''}`} onClick={() => setPage('ambulance_fleet')}>
-              <span className="icon">🚑</span> Ambulance Fleet
+              <span className="icon"><Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Ambulance Fleet
             </button>
             <button className={`sidebar-item ${page === 'emergency_calls' ? 'active' : ''}`} onClick={() => setPage('emergency_calls')}>
-              <span className="icon">🚨</span> Emergency Dispatch
+              <span className="icon"><Siren size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Emergency Dispatch
             </button>
             <button className={`sidebar-item ${page === 'traffic_control' ? 'active' : ''}`} onClick={() => setPage('traffic_control')}>
-              <span className="icon">🚥</span> Traffic Control
+              <span className="icon"><TrafficCone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Traffic Control
             </button>
           </>
         )}

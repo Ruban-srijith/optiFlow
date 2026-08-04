@@ -197,7 +197,7 @@ export default function TrafficControlPage() {
               </div>
               {selectedIntersection.manual_override_active && (
                 <div style={{ fontSize: 11, color: '#c2410c', marginTop: 6, background: '#fff7ed', padding: '6px 10px', borderRadius: 6, border: '1px solid #fed7aa' }}>
-                  ⚠️ Reason: {selectedIntersection.override_reason}
+                  <AlertTriangle size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Reason: {selectedIntersection.override_reason}
                 </div>
               )}
             </div>

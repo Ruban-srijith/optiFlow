@@ -35,7 +35,7 @@ function ConductorModal({ conductor, buses, onClose, onSaved }) {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <div className="modal-title">{isEdit ? '✏️ Edit Conductor' : '👨‍✈️ Add Conductor'}</div>
+        <div className="modal-title">{isEdit ? '✏️ Edit Conductor' : <><UserSquare2 size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Add Conductor</>}</div>
         {error && <div className="alert alert-error" style={{ marginBottom: 14 }}>{error}</div>}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="grid-2">
@@ -139,7 +139,7 @@ export default function ConductorsPage() {
                 <tr key={c._id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>👤</div>
+                      <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}><User size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></div>
                       <div style={{ fontWeight: 600, fontSize: 14 }}>{c.full_name}</div>
                     </div>
                   </td>

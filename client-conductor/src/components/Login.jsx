@@ -94,7 +94,7 @@ export default function Login({ onLogin }) {
       <div style={{ width: '100%', maxWidth: 420 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🚌</div>
+          <div style={{ fontSize: 48, marginBottom: 8 }}><Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></div>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1e293b' }}>
             Opti<span style={{ color: '#16a34a' }}>Flow</span>
           </h1>
@@ -136,7 +136,7 @@ export default function Login({ onLogin }) {
 
           {error && (
             <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#dc2626' }}>
-              ⚠️ {error}
+              <AlertTriangle size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> {error}
             </div>
           )}
 
@@ -169,7 +169,7 @@ export default function Login({ onLogin }) {
                   </div>
                 </div>
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }} disabled={loading}>
-                  {loading ? <span className="spinner" /> : '📲 Send OTP Code'}
+                  {loading ? <span className="spinner" /> : '<Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Send OTP Code'}
                 </button>
               </form>
             ) : (

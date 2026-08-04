@@ -47,21 +47,21 @@ export default function RevenuePage() {
       {/* Overall stat cards */}
       <div className="grid-3" style={{ marginBottom: 24 }}>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: '#f0fdf4' }}>💰</div>
+          <div className="stat-icon" style={{ background: '#f0fdf4' }}><Coins size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></div>
           <div>
             <div className="stat-value">₹{(overall.grand_total || 0).toLocaleString()}</div>
             <div className="stat-label">Total Revenue</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: '#fffbeb' }}>💵</div>
+          <div className="stat-icon" style={{ background: '#fffbeb' }}><Banknote size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></div>
           <div>
             <div className="stat-value">₹{(overall.cash_total || 0).toLocaleString()}</div>
             <div className="stat-label">Cash Collections</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: '#eef2ff' }}>📲</div>
+          <div className="stat-icon" style={{ background: '#eef2ff' }}><Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></div>
           <div>
             <div className="stat-value">₹{(overall.online_total || 0).toLocaleString()}</div>
             <div className="stat-label">Online Collections</div>

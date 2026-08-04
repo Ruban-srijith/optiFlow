@@ -18,7 +18,7 @@ export default function AmbulanceFleetPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', margin: 0 }}>
-            🚑 Emergency Ambulance Fleet Management
+            <Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Emergency Ambulance Fleet Management
           </h1>
           <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>
             Monitor and manage emergency ambulance status, assigned hospitals, and ALS/ICU equipment.
@@ -43,7 +43,7 @@ export default function AmbulanceFleetPage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                 <span style={{ fontWeight: 800, fontSize: 16, color: '#dc2626' }}>
-                  🚑 {amb.vehicle_number}
+                  <Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> {amb.vehicle_number}
                 </span>
                 <span
                   style={{

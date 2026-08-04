@@ -79,15 +79,15 @@ export default function UserManagementPage() {
       case 'superadmin':
         return <span style={{ background: '#fef3c7', color: '#b45309', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>👑 Super Admin</span>;
       case 'transit_admin':
-        return <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>🚌 Transit Admin</span>;
+        return <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}><Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Transit Admin</span>;
       case 'ambulance_admin':
-        return <span style={{ background: '#fee2e2', color: '#b91c1c', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>🚑 Health Admin</span>;
+        return <span style={{ background: '#fee2e2', color: '#b91c1c', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}><Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Health Admin</span>;
       case 'conductor':
-        return <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>👨‍✈️ Bus Conductor</span>;
+        return <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}><UserSquare2 size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus Conductor</span>;
       case 'ambulance_driver':
-        return <span style={{ background: '#ffedd5', color: '#c2410c', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>🚨 Ambulance Driver</span>;
+        return <span style={{ background: '#ffedd5', color: '#c2410c', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}><Siren size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance Driver</span>;
       default:
-        return <span style={{ background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600 }}>👤 Passenger</span>;
+        return <span style={{ background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600 }}><User size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Passenger</span>;
     }
   };
 
@@ -138,7 +138,7 @@ export default function UserManagementPage() {
                   <td style={{ padding: '12px 16px', fontWeight: 500 }}>{u.full_name || '—'}</td>
                   <td style={{ padding: '12px 16px' }}>{getRoleBadge(u.role)}</td>
                   <td style={{ padding: '12px 16px', color: '#64748b' }}>
-                    {u.assigned_bus_id ? `🚌 Bus ${u.assigned_bus_id}` : u.assigned_ambulance_id ? `🚑 Ambulance ${u.assigned_ambulance_id}` : '—'}
+                    {u.assigned_bus_id ? `<Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus ${u.assigned_bus_id}` : u.assigned_ambulance_id ? `<Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance ${u.assigned_ambulance_id}` : '—'}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <button className="btn" style={{ fontSize: 12, padding: '4px 8px' }} onClick={() => openEditModal(u)}>
@@ -189,11 +189,11 @@ export default function UserManagementPage() {
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
                 >
                   <option value="superadmin">👑 Super Admin (Full Governance)</option>
-                  <option value="transit_admin">🚌 Transit Admin (Bus Fleet)</option>
-                  <option value="ambulance_admin">🚑 Health Admin (Ambulance Fleet)</option>
-                  <option value="conductor">👨‍✈️ Bus Conductor</option>
-                  <option value="ambulance_driver">🚨 Ambulance Driver</option>
-                  <option value="passenger">👤 Passenger / Citizen</option>
+                  <option value="transit_admin"><Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Transit Admin (Bus Fleet)</option>
+                  <option value="ambulance_admin"><Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Health Admin (Ambulance Fleet)</option>
+                  <option value="conductor"><UserSquare2 size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus Conductor</option>
+                  <option value="ambulance_driver"><Siren size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance Driver</option>
+                  <option value="passenger"><User size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Passenger / Citizen</option>
                 </select>
               </div>
 
