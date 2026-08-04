@@ -7,10 +7,9 @@ import { Bus, MapPin } from 'lucide-react';
  *
  * Props:
  *   bus         — bus object from search API
- *   liveData    — real-time socket data
- *   onSelect    — highlight on map
- *   selected    — boolean
- *   onPayOnline — trigger payment modal with texport default function BusCard({ bus, liveData, onSelect, selected, onPayOnline, onBookSeat, userRole }) {
+ *   onPayOnline — trigger payment modal
+ */
+export default function BusCard({ bus, liveData, onSelect, selected, onPayOnline, onBookSeat, userRole }) {
   const freeSeats = liveData?.free_seats ?? bus.free_seats;
   const passengers = liveData?.current_passengers ?? bus.current_passengers;
   const capacity = bus.seating_capacity || 40;
