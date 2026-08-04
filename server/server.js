@@ -167,7 +167,7 @@ server.listen(PORT, () => {
 });
 
 if (process.env.MONGO_URI || true) {
-  mongoose.set('bufferCommands', false);
+  mongoose.set('bufferCommands', true);
   mongoose
     .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/optiflow', {
       serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of 30
