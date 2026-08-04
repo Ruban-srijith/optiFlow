@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Siren } from 'lucide-react';
+import { Siren, MapPin, Hospital } from 'lucide-react';
 import axios from 'axios';
 
 export default function EmergencyCallsPage() {
@@ -45,7 +45,10 @@ export default function EmergencyCallsPage() {
         <div>Loading emergency calls...</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {requests.map((req) => (
+          {requests.map((req) => {
+            const pickupName = typeof req.pickup_location === 'object' ? (req.pickup_location?.name || req.pickup_location?.address || 'Pickup Point') : (req.pickup_location || 'Pickup Point');
+            const destName = typeof req.destination_hospital === 'object' ? (req.destination_hospital?.name || 'Hospital') : (req.destination_hospital || 'Hospital');
+            return (
             <div
               key={req.request_id}
               style={{
@@ -79,8 +82,8 @@ export default function EmergencyCallsPage() {
                   <span style={{ fontSize: 12, color: '#64748b' }}>({req.contact_phone})</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#475569', marginBottom: 4 }}>
-                  <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Pickup: <strong>{req.pickup_location?.name}</strong> → <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination:{' '}
-                  <strong>{req.destination_hospital?.name}</strong>
+                  <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Pickup: <strong>{pickupName}</strong> → <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination:{' '}
+                  <strong>{destName}</strong>
                 </div>
                 <div style={{ fontSize: 12, color: '#64748b' }}>
                   Category: <span style={{ fontWeight: 600, color: '#1e293b' }}>{req.emergency_type}</span> |
@@ -109,7 +112,8 @@ export default function EmergencyCallsPage() {
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MapPin } from 'lucide-react';
 import { getBuses, createBus, deleteBus, getStops } from '../services/api';
 import RouteBuilder from './RouteBuilder';
 
@@ -128,7 +129,8 @@ export default function RoutesPage() {
             </thead>
             <tbody>
               {buses.map((bus) => {
-                const orderedStops = [...bus.route_stops].sort((a, b) => a.sequence - b.sequence);
+                const stopsArr = Array.isArray(bus.route_stops) ? bus.route_stops : [];
+                const orderedStops = [...stopsArr].sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
                 return (
                   <tr key={bus.bus_id}>
                     <td>

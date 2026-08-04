@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { User, UserSquare2 } from 'lucide-react';
 import { getConductors, getBuses, createConductor, updateConductor, deleteConductor } from '../../services/api';
 
 function ConductorModal({ conductor, buses, onClose, onSaved }) {
