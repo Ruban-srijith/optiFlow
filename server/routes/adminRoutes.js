@@ -156,8 +156,12 @@ router.put('/users/:id', verifyAdmin, async (req, res) => {
 // STOPS
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/stops', verifyAdmin, async (req, res) => {
-  const stops = await Stop.find().sort({ stop_id: 1 });
-  res.json(stops);
+  try {
+    const stops = await Stop.find().sort({ stop_id: 1 });
+    res.json(stops);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -170,8 +174,12 @@ function verifyTransitAdmin(req, res, next) {
   next();
 }
 router.get('/buses', verifyAdmin, async (req, res) => {
-  const buses = await Bus.find().sort({ bus_number: 1 });
-  res.json(buses);
+  try {
+    const buses = await Bus.find().sort({ bus_number: 1 });
+    res.json(buses);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.post('/buses', verifyAdmin, verifyTransitAdmin, async (req, res) => {
@@ -229,8 +237,12 @@ router.delete('/buses/:bus_id', verifyAdmin, verifyTransitAdmin, async (req, res
 // CONDUCTORS — transit_admin / superadmin only
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/conductors', verifyAdmin, async (req, res) => {
-  const conductors = await Conductor.find({}, '-password_hash -__v').sort({ createdAt: -1 });
-  res.json(conductors);
+  try {
+    const conductors = await Conductor.find({}, '-password_hash -__v').sort({ createdAt: -1 });
+    res.json(conductors);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.post('/conductors', verifyAdmin, verifyTransitAdmin, async (req, res) => {
