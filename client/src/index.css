@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design Tokens ─────────────────────────────────────────────── */
+:root {
+  --color-primary:     #16a34a;
+  --color-primary-dk:  #15803d;
+  --color-primary-lt:  #dcfce7;
+  --color-surface:     #ffffff;
+  --color-bg:          #f8fafc;
+  --color-border:      #e2e8f0;
+  --color-text:        #1e293b;
+  --color-muted:       #64748b;
+  --color-danger:      #ef4444;
+  --color-warning:     #f59e0b;
+  --radius-card:       12px;
+  --shadow-card:       0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-hover:      0 4px 16px rgba(22,163,74,0.15), 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+/* ─── Card Component ─────────────────────────────────────────────── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover { box-shadow: var(--shadow-hover); }
+
+/* ─── Buttons ────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.1s ease;
+}
+.btn-primary:hover  { background: var(--color-primary-dk); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.btn-outline:hover { background: var(--color-primary-lt); }
+
+/* ─── Input ──────────────────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+.input-field:focus { border-color: var(--color-primary); }
+.input-field::placeholder { color: var(--color-muted); }
+
+/* ─── Badge ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-green  { background: var(--color-primary-lt); color: var(--color-primary-dk); }
+.badge-orange { background: #fff7ed; color: #c2410c; }
+.badge-red    { background: #fef2f2; color: #dc2626; }
+.badge-gray   { background: #f1f5f9; color: var(--color-muted); }
+
+/* ─── Seat Bar ───────────────────────────────────────────────────── */
+.seat-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+.seat-bar__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+/* ─── Accordion ──────────────────────────────────────────────────── */
+.accordion-content {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+.accordion-content.open {
+  max-height: 600px;
+}
+
+/* ─── Pulse animation for live bus marker ────────────────────────── */
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+.live-ping {
+  animation: ping 1.2s cubic-bezier(0,0,0.2,1) infinite;
+}
+
+/* ─── Spinner ────────────────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--color-primary-lt);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ─── Navbar ─────────────────────────────────────────────────────── */
+.navbar {
+  height: 56px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────── */
+.app-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  grid-template-rows: 1fr;
+  height: calc(100vh - 56px);
+}
+
+@media (max-width: 900px) {
+  .app-layout {
+    display: flex;
+    flex-direction: column-reverse;
+    height: auto;
+    min-height: calc(100vh - 56px);
+  }
+  .sidebar {
+    height: auto;
+    overflow-y: visible;
+  }
+  .map-container {
+    height: 45vh;
+    min-height: 350px;
+    flex: none;
+    width: 100%;
+  }
+}
+
+.sidebar {
+  overflow-y: auto;
+  padding: 20px 16px;
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Live dot ───────────────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.live-dot {
+  width: 8px; height: 8px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

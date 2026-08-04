@@ -1,0 +1,31 @@
+import { useEffect, useRef, useState } from 'react';
+import { io } from 'socket.io-client';
+
+const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:5000';
+
+export function useSocket() {
+  const socketRef = useRef(null);
+  const [connected, setConnected] = useState(false);
+  const [busPositions, setBusPositions] = useState({});
+  const [busUpdates, setBusUpdates] = useState({});
+
+  useEffect(() => {
+    const socket = io(WS_URL, { transports: ['websocket'], reconnectionAttempts: 10 });
+    socketRef.current = socket;
+
+    socket.on('connect', () => setConnected(true));
+    socket.on('disconnect', () => setConnected(false));
+
+    socket.on('bus_position', ({ bus_id, coordinates }) => {
+      setBusPositions((p) => ({ ...p, [bus_id]: coordinates }));
+    });
+
+    socket.on('bus_updated', (data) => {
+      setBusUpdates((p) => ({ ...p, [data.bus_id]: data }));
+    });
+
+    return () => socket.disconnect();
+  }, []);
+
+  return { busPositions, busUpdates, connected, socketRef };
+}
