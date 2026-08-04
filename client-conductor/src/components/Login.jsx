@@ -191,7 +191,7 @@ export default function Login({ onLogin }) {
                   />
                 </div>
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }} disabled={loading}>
-                  {loading ? <span className="spinner" /> : '✅ Verify & Login'}
+                  {loading ? <span className="spinner" /> : '<CheckCircle2 size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Verify & Login'}
                 </button>
                 <button
                   type="button"

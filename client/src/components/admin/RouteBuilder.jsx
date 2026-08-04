@@ -37,7 +37,7 @@ function getMiddleStops(allStops, startId, endId) {
 }
 
 /**
- * RouteBuilder — lets admin select start + end, auto-suggests middle stops,
+ * RouteBuilder - lets admin select start + end, auto-suggests middle stops,
  * and returns a final ordered list of stop_ids.
  */
 export default function RouteBuilder({ stops, value, onChange }) {
@@ -77,11 +77,11 @@ export default function RouteBuilder({ stops, value, onChange }) {
       prev.find((s) => s.stop_id === stop.stop_id)
         ? prev.filter((s) => s.stop_id !== stop.stop_id)
         : [...prev, stop].sort((a, b) => {
-            const ca = a.location?.coordinates;
-            const cb = b.location?.coordinates;
-            if (!startCoord || !ca || !cb) return 0;
-            return dist(startCoord, ca) - dist(startCoord, cb);
-          })
+          const ca = a.location?.coordinates;
+          const cb = b.location?.coordinates;
+          if (!startCoord || !ca || !cb) return 0;
+          return dist(startCoord, ca) - dist(startCoord, cb);
+        })
     );
   };
 
@@ -120,7 +120,7 @@ export default function RouteBuilder({ stops, value, onChange }) {
       {startId && endId && (
         <div>
           <label className="form-label" style={{ display: 'block', marginBottom: 8 }}>
-            Middle Stops (auto-suggested — click to toggle)
+            Middle Stops (auto-suggested - click to toggle)
           </label>
           {suggestedMiddle.length === 0 ? (
             <p style={{ fontSize: 12, color: '#94a3b8' }}>No intermediate stops detected between these two points.</p>

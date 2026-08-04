@@ -55,6 +55,10 @@ export const createEmergencyRequest = (payload) => api.post('/ambulances/request
 export const fetchEmergencyRequests = () => api.get('/ambulances/requests');
 export const updateEmergencyStatus = (requestId, payload) =>
   api.patch(`/ambulances/request/${requestId}/status`, payload);
+export const acceptDispatch = (requestId) =>
+  api.post(`/ambulances/request/${requestId}/accept`);
+export const declineDispatch = (requestId) =>
+  api.post(`/ambulances/request/${requestId}/decline`);
 
 // Driver specific
 export const registerAmbulance = (payload) => api.post('/ambulances/register', payload);

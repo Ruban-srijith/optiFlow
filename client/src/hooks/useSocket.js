@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 const SERVER_URL = 'http://localhost:5001';
 
 /**
- * useSocket — connects to the OptiFlow Socket.io server and
+ * useSocket - connects to the OptiFlow Socket.io server and
  * provides real-time bus position / update events.
  *
  * @returns {{ busPositions, busUpdates, connected }}

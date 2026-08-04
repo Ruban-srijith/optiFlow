@@ -77,7 +77,7 @@ export default function PassengerLogin({ onLoginSuccess }) {
       // Offline fallback
       setOtpSent(true);
       setOtpCode('123456');
-      setInfo('Offline mode active — Enter 123456');
+      setInfo('Offline mode active - Enter 123456');
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,7 @@ export default function PassengerLogin({ onLoginSuccess }) {
         {/* 1-CLICK QUICK LOGIN HERO BANNER */}
         <div style={{ marginBottom: 20, padding: 14, background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 16 }}>
           <div style={{ fontSize: 12, fontWeight: 800, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Zap size={14} /> 1-Click Instant Login (No Typing)</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Zap size={14} /> Click Instant Login (No Typing)</span>
             <span style={{ fontSize: 10, background: '#16a34a', color: '#fff', padding: '2px 6px', borderRadius: 4 }}>Fast</span>
           </div>
 

@@ -220,7 +220,7 @@ router.get('/stops', verifyAdmin, async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// ROUTES (Buses) — transit_admin / superadmin only
+// ROUTES (Buses) - transit_admin / superadmin only
 // ════════════════════════════════════════════════════════════════════════════
 function verifyTransitAdmin(req, res, next) {
   if (!req.admin || !['transit_admin', 'superadmin'].includes(req.admin.role)) {
@@ -297,7 +297,7 @@ router.delete('/buses/:bus_id', verifyAdmin, verifyTransitAdmin, async (req, res
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// CONDUCTORS — transit_admin / superadmin only
+// CONDUCTORS - transit_admin / superadmin only
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/conductors', verifyAdmin, async (req, res) => {
   try {
@@ -369,7 +369,7 @@ router.delete('/conductors/:id', verifyAdmin, verifyTransitAdmin, async (req, re
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// REVENUE STATS — transit_admin / superadmin only (bus data)
+// REVENUE STATS - transit_admin / superadmin only (bus data)
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/stats/revenue', verifyAdmin, async (req, res) => {
   try {
@@ -416,7 +416,7 @@ router.get('/stats/revenue', verifyAdmin, async (req, res) => {
       enriched = results.map((r) => ({
         bus_id: r._id,
         bus_number: busMap[r._id]?.bus_number || r._id,
-        route_name: busMap[r._id]?.route_name || '—',
+        route_name: busMap[r._id]?.route_name || '-',
         grand_total: r.grand_total,
         total_tickets: r.total_tickets,
         total_passengers: r.total_passengers,

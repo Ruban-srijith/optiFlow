@@ -62,9 +62,9 @@ function ConductorModal({ conductor, buses, onClose, onSaved }) {
           <div className="form-group">
             <label className="form-label">Assign to Route</label>
             <select className="form-select" value={form.assigned_bus_id} onChange={e => setForm(p => ({ ...p, assigned_bus_id: e.target.value }))}>
-              <option value="">— Unassigned —</option>
+              <option value="">- Unassigned -</option>
               {buses.map((b) => (
-                <option key={b.bus_id} value={b.bus_id}>Route {b.bus_number} — {b.route_name}</option>
+                <option key={b.bus_id} value={b.bus_id}>Route {b.bus_number} - {b.route_name}</option>
               ))}
             </select>
           </div>
@@ -92,7 +92,7 @@ export default function ConductorsPage() {
       const [cRes, bRes] = await Promise.all([getConductors(), getBuses()]);
       setConductors(cRes.data);
       setBuses(bRes.data);
-    } catch {}
+    } catch { }
     setLoading(false);
   };
 
@@ -105,7 +105,7 @@ export default function ConductorsPage() {
 
   const busName = (bus_id) => {
     const b = buses.find((b) => b.bus_id === bus_id);
-    return b ? `Route ${b.bus_number} — ${b.route_name}` : null;
+    return b ? `Route ${b.bus_number} - ${b.route_name}` : null;
   };
 
   return (

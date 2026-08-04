@@ -1,5 +1,5 @@
 /**
- * OptiFlow — Pine Labs POS Fleet Simulator
+ * OptiFlow - Pine Labs POS Fleet Simulator
  * Simulates 3 buses (1D, 3D, 11A) traveling Coimbatore routes.
  *
  * Run: node simulator.js

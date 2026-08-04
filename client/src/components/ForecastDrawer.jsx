@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Bot } from 'lucide-react';
 
 /**
- * ForecastDrawer — expandable accordion showing stop-by-stop ML seat forecast.
+ * ForecastDrawer - expandable accordion showing stop-by-stop ML seat forecast.
  * Props:
  *   forecast: [{ stop_id, stop_name, predicted_free_seats, predicted_boardings, predicted_dropoffs }]
  *   seatingCapacity: number
@@ -71,7 +71,7 @@ export default function ForecastDrawer({ forecast = [], seatingCapacity = 40 }) 
           <p
             style={{ fontSize: 11, color: '#64748b', marginBottom: 12, fontWeight: 500 }}
           >
-            <Bot size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} /> ML-predicted occupancy — powered by LightGBM
+            <Bot size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} /> ML-predicted occupancy - powered by LightGBM
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

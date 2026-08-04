@@ -24,7 +24,7 @@ const emergencyRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['requested', 'dispatched', 'en_route', 'arrived', 'completed', 'cancelled'],
+    enum: ['requested', 'pending', 'dispatched', 'en_route', 'arrived', 'transporting', 'completed', 'cancelled'],
     default: 'requested',
   },
   assigned_ambulance_id: { type: String, default: null },

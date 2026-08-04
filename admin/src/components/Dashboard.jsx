@@ -24,7 +24,7 @@ export default function Dashboard({ onNavigate }) {
           tickets: rev.overall?.total_tickets || 0,
         });
         setRecentRoutes(rev.routes?.slice(0, 5) || []);
-      } catch {}
+      } catch { }
       setLoading(false);
     }
     load();
@@ -81,7 +81,7 @@ export default function Dashboard({ onNavigate }) {
                 <div key={r.bus_id}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 13, fontWeight: 600 }}>
-                      Route {r.bus_number} — {r.route_name}
+                      Route {r.bus_number} - {r.route_name}
                     </span>
                     <span style={{ fontSize: 13, fontWeight: 800, color: '#16a34a' }}>₹{r.grand_total}</span>
                   </div>

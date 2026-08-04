@@ -113,18 +113,23 @@ export default function AmbulancePortal({
             background: '#ffffff',
             border: '1.5px solid #fecaca',
             borderRadius: 14,
-            padding: 16,
+            padding: 20,
             marginBottom: 16,
-            boxShadow: '0 2px 8px rgba(220, 38, 38, 0.08)',
+            boxShadow: '0 4px 12px rgba(220, 38, 38, 0.08)',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '2px 8px', borderRadius: 99, fontSize: 11, fontWeight: 700, color: '#dc2626' }}>
-                ID: {activeEmergency.request_id}
-              </span>
-              <strong style={{ fontSize: 14, color: '#0f172a' }}>{activeEmergency.patient_name}</strong>
-              <span style={{ fontSize: 12, color: '#64748b' }}>({activeEmergency.emergency_type})</span>
+          {/* Header Row: ID and Status */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fef2f2', border: '1px solid #fecaca', padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 800, color: '#dc2626', width: 'fit-content' }}>
+                <Flame size={14} /> ID: {activeEmergency.request_id}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                <strong style={{ fontSize: 16, color: '#0f172a', lineHeight: 1.2 }}>{activeEmergency.patient_name}</strong>
+                <span style={{ background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>
+                  {activeEmergency.emergency_type}
+                </span>
+              </div>
             </div>
 
             <button
@@ -133,38 +138,65 @@ export default function AmbulancePortal({
                 background: activeEmergency.green_corridor_active ? '#16a34a' : '#f1f5f9',
                 color: activeEmergency.green_corridor_active ? '#ffffff' : '#475569',
                 border: 'none',
-                padding: '4px 12px',
-                borderRadius: 99,
-                fontSize: 11,
+                padding: '6px 14px',
+                borderRadius: 8,
+                fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4,
+                gap: 6,
+                boxShadow: activeEmergency.green_corridor_active ? '0 2px 8px rgba(22,163,74,0.4)' : 'none',
+                transition: 'all 0.2s',
               }}
             >
-              <Circle size={12} color={activeEmergency.green_corridor_active ? '#ffffff' : '#16a34a'} fill="currentColor" /> Green Corridor: {activeEmergency.green_corridor_active ? 'ACTIVE' : 'OFF'}
+              <TrafficCone size={14} /> Green Corridor: {activeEmergency.green_corridor_active ? 'ACTIVE' : 'OFF'}
             </button>
           </div>
 
-          <div style={{ fontSize: 13, color: '#334155', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><MapPin size={14} /> <span><strong>Pickup:</strong> {activeEmergency.pickup_location?.name}</span></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Hospital size={14} /> <span><strong>Hospital:</strong> {activeEmergency.destination_hospital?.name}</span></div>
+          {/* Location details */}
+          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#334155', fontSize: 13 }}>
+              <MapPin size={16} color="#ef4444" style={{ marginTop: 2, flexShrink: 0 }} />
+              <div>
+                <strong style={{ display: 'block', color: '#64748b', fontSize: 11, textTransform: 'uppercase', marginBottom: 2 }}>Pickup Location</strong>
+                {activeEmergency.pickup_location?.name || activeEmergency.pickup_location?.address}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#334155', fontSize: 13 }}>
+              <Hospital size={16} color="#3b82f6" style={{ marginTop: 2, flexShrink: 0 }} />
+              <div>
+                <strong style={{ display: 'block', color: '#64748b', fontSize: 11, textTransform: 'uppercase', marginBottom: 2 }}>Destination Hospital</strong>
+                {activeEmergency.destination_hospital?.name || activeEmergency.destination_hospital}
+              </div>
+            </div>
           </div>
 
           {/* Step Tracker */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', background: '#f8fafc', padding: '10px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: ['requested', 'dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
-              1. Call Received <Check size={12} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 10, fontWeight: 700, textAlign: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: ['requested', 'dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#cbd5e1' }}>
+              <div style={{ background: ['requested', 'dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#fef2f2' : '#f8fafc', padding: 6, borderRadius: '50%' }}>
+                <ShieldAlert size={16} />
+              </div>
+              <span>Call Rx'd</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: ['dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
-              2. Unit Dispatched <Check size={12} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: ['dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#cbd5e1' }}>
+              <div style={{ background: ['dispatched', 'en_route', 'arrived'].includes(activeEmergency.status) ? '#fef2f2' : '#f8fafc', padding: 6, borderRadius: '50%' }}>
+                <Ambulance size={16} />
+              </div>
+              <span>Dispatched</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: ['en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#94a3b8' }}>
-              3. En-Route <Ambulance size={12} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: ['en_route', 'arrived'].includes(activeEmergency.status) ? '#dc2626' : '#cbd5e1' }}>
+              <div style={{ background: ['en_route', 'arrived'].includes(activeEmergency.status) ? '#fef2f2' : '#f8fafc', padding: 6, borderRadius: '50%' }}>
+                <Zap size={16} />
+              </div>
+              <span>En-Route</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: activeEmergency.status === 'arrived' ? '#dc2626' : '#94a3b8' }}>
-              4. Hospital Arrival <Hospital size={12} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: activeEmergency.status === 'arrived' ? '#dc2626' : '#cbd5e1' }}>
+              <div style={{ background: activeEmergency.status === 'arrived' ? '#fef2f2' : '#f8fafc', padding: 6, borderRadius: '50%' }}>
+                <Hospital size={16} />
+              </div>
+              <span>Arrived</span>
             </div>
           </div>
         </div>

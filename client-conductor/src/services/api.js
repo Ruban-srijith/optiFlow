@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally — force logout
+// Handle 401 globally - force logout
 api.interceptors.response.use(
   (res) => res,
   (err) => {

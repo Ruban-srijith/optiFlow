@@ -18,7 +18,7 @@ export default function App() {
           setConductor(res.data);
         })
         .catch(() => {
-          // Token invalid/expired — clear
+          // Token invalid/expired - clear
           localStorage.removeItem('conductor_token');
           localStorage.removeItem('conductor_info');
         })

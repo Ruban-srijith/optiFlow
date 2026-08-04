@@ -146,6 +146,13 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('join_driver_room', ({ ambulance_id }) => {
+    if (ambulance_id) {
+      socket.join(`driver_${ambulance_id}`);
+      console.log(`🚑 Driver joined room: driver_${ambulance_id}`);
+    }
+  });
+
   socket.on('green_corridor_toggle', ({ request_id, active }) => {
     io.emit('green_corridor_update', { request_id, active });
   });
@@ -174,7 +181,7 @@ if (process.env.MONGO_URI || true) {
       serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of 30
     })
     .then(() => {
-      console.log('✅ MongoDB connected — optiflow');
+      console.log('✅ MongoDB connected - optiflow');
     })
     .catch((err) => {
       console.warn('⚠️  MongoDB connection notice:', err.message);

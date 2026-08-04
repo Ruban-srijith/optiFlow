@@ -269,7 +269,7 @@ export default function MapView({
           <Popup>
             <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
               <div style={{ fontWeight: 800, fontSize: 13, color: '#16a34a' }}>
-                📍 Your Current Location
+                <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Your Current Location
               </div>
               <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
                 Live GPS Active
@@ -356,7 +356,7 @@ export default function MapView({
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                     <InfoStat label="Free Seats" value={freeSeats} color="#16a34a" />
-                    <InfoStat label="Passengers" value={liveData?.current_passengers ?? '—'} color="#1e293b" />
+                    <InfoStat label="Passengers" value={liveData?.current_passengers ?? '-'} color="#1e293b" />
                   </div>
                 </div>
               </Popup>

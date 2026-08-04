@@ -11,7 +11,7 @@ function calculateFare(stopCount) {
   return Math.max(5, stopCount * 2);
 }
 
-// Shared io instance — injected from server.js
+// Shared io instance - injected from server.js
 let io;
 router.setIO = (ioInstance) => {
   io = ioInstance;
@@ -103,7 +103,7 @@ router.post('/issue', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// GET /api/tickets — list recent tickets
+// GET /api/tickets - list recent tickets
 // ---------------------------------------------------------------------------
 router.get('/', async (req, res) => {
   try {

@@ -56,9 +56,9 @@ export default function DriverMap({
 
   // Fetch OSRM route if active dispatch exists
   useEffect(() => {
-      if (driverRole === 'ambulance_driver' && activeDispatch && driverLocation) {
+    if (driverRole === 'ambulance_driver' && activeDispatch && driverLocation) {
       const isTransporting = activeDispatch.status === 'transporting';
-      const destinationCoords = isTransporting 
+      const destinationCoords = isTransporting
         ? activeDispatch.destination_hospital?.coordinates
         : activeDispatch.pickup_location?.coordinates;
 
@@ -92,7 +92,7 @@ export default function DriverMap({
         {/* Current Driver Marker */}
         {driverLocation && (
           <Marker position={[driverLocation[1], driverLocation[0]]} icon={driverRole === 'conductor' ? busIcon : ambulanceIcon}>
-            <Popup><strong>You are here</strong></Popup>
+            <Popup><strong>You are Here</strong></Popup>
           </Marker>
         )}
 
@@ -105,7 +105,7 @@ export default function DriverMap({
           return (
             <Marker key={bus.bus_id} position={[coords[1], coords[0]]} icon={busIcon}>
               <Popup>
-                <strong>{bus.bus_id}</strong><br/>
+                <strong>{bus.bus_id}</strong><br />
                 Route: {bus.route_id}
               </Popup>
             </Marker>
@@ -121,7 +121,7 @@ export default function DriverMap({
           return (
             <Marker key={amb.ambulance_id} position={[coords[1], coords[0]]} icon={ambulanceIcon}>
               <Popup>
-                <strong>{amb.ambulance_id}</strong><br/>
+                <strong>{amb.ambulance_id}</strong><br />
                 Status: {amb.status}
               </Popup>
             </Marker>
@@ -134,7 +134,7 @@ export default function DriverMap({
             activeDispatch.destination_hospital?.coordinates && (
               <Marker position={[activeDispatch.destination_hospital.coordinates[1], activeDispatch.destination_hospital.coordinates[0]]} icon={createCustomIcon(Bus, '#7c3aed')}>
                 <Popup>
-                  <strong>Destination Hospital</strong><br/>
+                  <strong>Destination Hospital</strong><br />
                   {activeDispatch.destination_hospital.name}
                 </Popup>
               </Marker>
@@ -143,7 +143,7 @@ export default function DriverMap({
             activeDispatch.pickup_location?.coordinates && (
               <Marker position={[activeDispatch.pickup_location.coordinates[1], activeDispatch.pickup_location.coordinates[0]]} icon={patientIcon}>
                 <Popup>
-                  <strong>Patient Pickup</strong><br/>
+                  <strong>Patient Pickup</strong><br />
                   {activeDispatch.patient_name}
                 </Popup>
               </Marker>

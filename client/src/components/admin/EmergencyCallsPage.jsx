@@ -105,7 +105,7 @@ export default function EmergencyCallsPage() {
                     cursor: 'pointer',
                   }}
                 >
-                  🟢 Green Corridor: {req.green_corridor_active ? 'ENABLED' : 'DISABLED'}
+                  <Circle size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Green Corridor: {req.green_corridor_active ? 'ENABLED' : 'DISABLED'}
                 </button>
               </div>
             </div>

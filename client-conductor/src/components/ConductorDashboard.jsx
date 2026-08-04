@@ -16,13 +16,14 @@ import {
 } from '../services/api';
 import DriverMap from './DriverMap';
 import { ShieldAlert, RefreshCw, Radio, AlertCircle, Play, CheckCircle2, RotateCcw, Navigation, Compass, Users, TrendingUp, MapPin, Map, PlusCircle, CheckCircle, Ticket, Bus, Ambulance, User, Banknote, Smartphone, Siren, Hospital, Flame, TrafficCone } from 'lucide-react';
+import AmbulanceDriverPortalInline from './AmbulanceDriverPortal';
 
 const STOP_NAMES = {
-  101: 'Ondipudur',     102: 'Singanallur',     103: 'Ramanathapuram',
-  104: 'Lakshmi Mills', 105: 'Gandhipuram',      106: 'Lawley Road',
-  107: 'Vadavalli',     108: 'Maruthamalai',
-  201: 'Ganapathy',     202: 'Sivananda Colony', 203: 'Town Hall',
-  204: 'Ukkadam',       205: 'Kovaipudur',
+  101: 'Ondipudur', 102: 'Singanallur', 103: 'Ramanathapuram',
+  104: 'Lakshmi Mills', 105: 'Gandhipuram', 106: 'Lawley Road',
+  107: 'Vadavalli', 108: 'Maruthamalai',
+  201: 'Ganapathy', 202: 'Sivananda Colony', 203: 'Town Hall',
+  204: 'Ukkadam', 205: 'Kovaipudur',
   301: 'Railway Station', 302: 'Saibaba Colony', 303: 'Thudiyalur',
 };
 
@@ -119,7 +120,7 @@ function PaymentQRModal({ qrDetails, onCancel, onSuccess }) {
           onClick={handleSimulatePayment}
           disabled={verifying}
         >
-          {verifying ? <span className="spinner" /> : '✅ Received Payment'}
+          {verifying ? <span className="spinner" /> : '<CheckCircle2 size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Received Payment'}
         </button>
       </div>
     </div>
@@ -263,7 +264,7 @@ function TicketRow({ ticket }) {
 // ─── Main Dashboard ────────────────────────────────────────────────────────
 export default function ConductorDashboard({ conductor, onLogout }) {
   const [driverRole, setDriverRole] = useState(conductor?.role === 'ambulance_driver' ? 'ambulance_driver' : 'conductor'); // 'conductor' | 'ambulance_driver'
-  
+
   // Ambulance terminal state
   const [ambulanceId, setAmbulanceId] = useState(localStorage.getItem('assigned_ambulance_id') || '');
   const [vehicleNumber, setVehicleNumber] = useState('');
@@ -291,7 +292,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
   const [recentTickets, setRecentTickets] = useState([]);
   const [gpsActive, setGpsActive] = useState(false);
   const [acceptedDispatchId, setAcceptedDispatchId] = useState(null);
-  
+
   // Occupancy override state
   const [seatedOverride, setSeatedOverride] = useState(0);
   const [standingOverride, setStandingOverride] = useState(0);
@@ -310,7 +311,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
         setSelectedBusId(res.data[0].bus_id);
       }
     });
-    fetchAmbulances().then((res) => setAllAmbulances(res.data)).catch(() => {});
+    fetchAmbulances().then((res) => setAllAmbulances(res.data)).catch(() => { });
   }, [conductor]);
 
   useEffect(() => {
@@ -329,7 +330,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
     try {
       const res = await fetchTickets();
       setRecentTickets(res.data.filter((t) => t.bus_id === selectedBusId).slice(0, 20));
-    } catch (_) {}
+    } catch (_) { }
   }, [selectedBusId]);
 
   useEffect(() => { loadTickets(); }, [loadTickets, receipt]);
@@ -404,7 +405,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
           setAmbulanceId(res.data.ambulance.ambulance_id);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoadingDispatch(false));
 
     // Live dispatch polling loop
@@ -426,7 +427,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
         if (!ambulanceId) return;
         const { latitude, longitude } = pos.coords;
         setDriverLocation([longitude, latitude]);
-        
+
         // Sockets emit
         socketRef.current?.emit('ambulance_location_update', {
           ambulance_id: ambulanceId,
@@ -440,7 +441,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
             latitude,
             longitude,
           });
-        } catch (_) {}
+        } catch (_) { }
       },
       (err) => console.error('Ambulance GPS tracking warning:', err),
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
@@ -469,7 +470,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
             duration: res.data.total_duration,
           });
         })
-        .catch(() => {});
+        .catch(() => { });
     } else {
       setTurnSteps([]);
       setRouteSummary(null);
@@ -710,12 +711,6 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
         <div className="hide-on-mobile" style={{ height: 20, width: 1, background: '#334155', margin: '0 12px' }} />
 
-        {/* Live sync status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span className="live-dot" style={{ background: connected ? '#16a34a' : '#ef4444' }} />
-          <span className="hide-on-mobile" style={{ fontSize: 11, color: '#94a3b8' }}>{connected ? 'Live' : 'Offline'}</span>
-        </div>
-
         <div className="hide-on-mobile" style={{ height: 20, width: 1, background: '#334155', margin: '0 12px' }} />
 
         {/* GPS tracking status indicator */}
@@ -746,7 +741,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
         {driverRole === 'conductor' ? (
           /* ─── CONDUCTOR APP VIEW ─── */
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 20, alignItems: 'flex-start' }}>
-            
+
             {/* LEFT: Ticket issuer POS */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {/* POS Terminal Card */}
@@ -765,7 +760,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                     <label style={{ fontSize: 10, fontWeight: 700, color: '#64748b' }}>FROM (BOARDING STOP)</label>
-                    <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 700 }}>📍 Auto-detected from live location</span>
+                    <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 700 }}><MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Auto-detected from live location</span>
                   </div>
                   <select
                     className="input-field"
@@ -873,7 +868,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
               {/* Bus Settings & Occupancy Overrides widget */}
               <div className="card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1e293b', margin: 0 }}>Bus Information & Occupancy</h3>
-                
+
                 <div>
                   <label style={{ fontSize: 10, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 4 }}>SELECTED BUS</label>
                   <select
@@ -884,7 +879,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                   >
                     {buses.map((b) => (
                       <option key={b.bus_id} value={b.bus_id}>
-                        Route {b.bus_number} — {b.route_name} {b.bus_id === conductor?.assigned_bus_id ? ' ★' : ''}
+                        Route {b.bus_number} - {b.route_name} {b.bus_id === conductor?.assigned_bus_id ? ' ★' : ''}
                       </option>
                     ))}
                   </select>
@@ -1000,194 +995,9 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
           </div>
         ) : (
-          /* ─── AMBULANCE DRIVER APP VIEW ─── */
-          <div style={{ display: 'grid', gridTemplateColumns: ambulanceId ? '1fr 1.2fr' : '1fr', gap: 20, alignItems: 'flex-start' }}>
-            
-            {/* LEFT: Registry / Status control */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {!ambulanceId ? (
-                /* Registration needed */
-                <div className="card" style={{ padding: 20, border: '1px solid #fca5a5' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                    <ShieldAlert size={24} color="#dc2626" />
-                    <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', margin: 0 }}>Verify Ambulance Registration</h3>
-                  </div>
-                  
-                  <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 16px 0', lineHeight: 1.5 }}>
-                    Your account is not registered to an active 108 Emergency Response ambulance. Register below to activate emergency GPS and receive priority corridor clearances.
-                  </p>
-
-                  <form onSubmit={handleSelfRegister} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div>
-                      <label style={{ fontSize: 10, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>VEHICLE NUMBER</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. TN-38-AM-1081"
-                        value={vehicleNumber}
-                        onChange={(e) => setVehicleNumber(e.target.value)}
-                        className="input-field"
-                        style={{ padding: 10 }}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ fontSize: 10, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>AMBULANCE TYPE</label>
-                      <select
-                        className="input-field"
-                        value={vehicleType}
-                        onChange={(e) => setVehicleType(e.target.value)}
-                        style={{ padding: 10 }}
-                      >
-                        <option value="ALS">Advanced Life Support (ALS)</option>
-                        <option value="BLS">Basic Life Support (BLS)</option>
-                        <option value="ICU">Critical Mobile ICU</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label style={{ fontSize: 10, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>HOSPITAL STATIONED</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Kovai Medical Center & Hospital"
-                        value={hospitalName}
-                        onChange={(e) => setHospitalName(e.target.value)}
-                        className="input-field"
-                        style={{ padding: 10 }}
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={updatingAmb}
-                      className="btn-primary"
-                      style={{ width: '100%', justifyContent: 'center', background: '#dc2626', padding: '12px 0' }}
-                    >
-                      {updatingAmb ? <span className="spinner" /> : <PlusCircle size={16} />}
-                      {updatingAmb ? 'Registering...' : 'Register Ambulance'}
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                /* Ambulance registered and active controls */
-                <>
-                  <div className="card" style={{ padding: 20 }}>
-                    <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: 12, marginBottom: 12 }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, color: '#ef4444', textTransform: 'uppercase' }}>VEHICLE VERIFIED</div>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', marginTop: 2 }}>{ambulanceId}</div>
-                      {dispatchData?.ambulance?.hospital_name && (dispatchData?.ambulance?.status !== 'offline') && (
-                        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>Stationed: {dispatchData.ambulance.hospital_name}</div>
-                      )}
-                    </div>
-
-                    <label style={{ fontSize: 10, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>EMERGENCY STATUS</label>
-                    
-                    {(() => {
-                      const currentStatus = dispatchData?.ambulance?.status || 'available';
-                      
-                      return (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                          {/* Availability Toggle - Only when no active dispatch */}
-                          {(!dispatchData?.active_dispatch || currentStatus === 'available' || currentStatus === 'offline') && (
-                            <div style={{ display: 'flex', gap: 8 }}>
-                              <button
-                                onClick={() => handleAmbStatusChange('available')}
-                                disabled={updatingAmb}
-                                style={{ flex: 1, padding: '12px 0', borderRadius: 8, background: currentStatus === 'available' ? '#16a34a' : '#f8fafc', color: currentStatus === 'available' ? '#fff' : '#64748b', fontWeight: 700, border: currentStatus === 'available' ? 'none' : '1px solid #cbd5e1', cursor: 'pointer' }}
-                              >
-                                ✅ Available
-                              </button>
-                              <button
-                                onClick={() => handleAmbStatusChange('offline')}
-                                disabled={updatingAmb}
-                                style={{ flex: 1, padding: '12px 0', borderRadius: 8, background: currentStatus === 'offline' ? '#ef4444' : '#f8fafc', color: currentStatus === 'offline' ? '#fff' : '#64748b', fontWeight: 700, border: currentStatus === 'offline' ? 'none' : '1px solid #cbd5e1', cursor: 'pointer' }}
-                              >
-                                🛑 Offline
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Active Dispatch Action Buttons */}
-                          {currentStatus === 'en_route' && (
-                            <button onClick={() => handleAmbStatusChange('on_scene')} disabled={updatingAmb} className="btn-primary" style={{ width: '100%', padding: '16px 0', fontSize: 16, background: '#d97706', justifyContent: 'center' }}>
-                              📍 Arrived Pickup
-                            </button>
-                          )}
-                          {currentStatus === 'on_scene' && (
-                            <button onClick={() => handleAmbStatusChange('transporting')} disabled={updatingAmb} className="btn-primary" style={{ width: '100%', padding: '16px 0', fontSize: 16, background: '#7c3aed', justifyContent: 'center' }}>
-                              🏥 Transporting
-                            </button>
-                          )}
-                          {currentStatus === 'transporting' && (
-                            <button onClick={() => handleAmbStatusChange('available')} disabled={updatingAmb} className="btn-primary" style={{ width: '100%', padding: '16px 0', fontSize: 16, background: '#16a34a', justifyContent: 'center' }}>
-                              ✅ Reached Hospital / Free
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  <div className="card" style={{ padding: 16, background: '#f8fafc' }}>
-                    <h4 style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>💡 GPS Tracking Active</h4>
-                    <p style={{ fontSize: 11, color: '#64748b', margin: 0, lineHeight: 1.5 }}>
-                      Ambulance GPS beacon is actively broadcasting coordinates to Central Traffic Control. Keep this page open to ensure green corridors route clears properly.
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* RIGHT: Active Dispatch & Green Corridor & Turn-by-Turn Route */}
-            {ambulanceId && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {loadingDispatch ? (
-                  <div className="card" style={{ padding: 30, textAlign: 'center', color: '#64748b' }}>
-                    <div className="spinner" style={{ margin: '0 auto 12px' }} />
-                    Syncing dispatch status...
-                  </div>
-                ) : dispatchData?.active_dispatch ? (
-                  /* Active Dispatch Case */
-                  <>
-                    {/* Call Card */}
-                    <div className="card" style={{ padding: 20, border: '1.5px solid #3b82f6', background: '#eff6ff' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                        <span style={{ background: '#dc2626', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>
-                          <Flame size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> {dispatchData.active_dispatch.priority?.toUpperCase()} CALL
-                        </span>
-                        <span style={{ fontSize: 11, color: '#3b82f6', fontWeight: 700, fontFamily: 'monospace' }}>
-                          {dispatchData.active_dispatch.request_id}
-                        </span>
-                      </div>
-
-                      <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1e3a8a', margin: '0 0 8px 0' }}>
-                        Patient: {dispatchData.active_dispatch.patient_name}
-                      </h3>
-
-                      <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 4 }}>
-                        <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Pickup: <strong>{dispatchData.active_dispatch.pickup_location?.name || 'Gandhipuram Junction'}</strong>
-                      </div>
-                      <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 4 }}>
-                        <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination: <strong>{dispatchData.active_dispatch.destination_hospital?.name || dispatchData.active_dispatch.destination_hospital}</strong>
-                      </div>
-                      <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 12 }}>
-                        📞 Contact: <strong>{dispatchData.active_dispatch.contact_phone}</strong>
-                      </div>
-
-                    </div>
-                  </>
-                ) : (
-                  /* Available / Standby Case */
-                  <div className="card" style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                    <div style={{ fontSize: 44, marginBottom: 12 }}>🟢</div>
-                    <h3 style={{ fontWeight: 800, fontSize: 16, color: '#16a34a', margin: '0 0 4px 0' }}>Standby / Ready</h3>
-                    <p style={{ fontSize: 12, color: '#64748b', margin: 0 }}>
-                      Waiting for emergency dispatch call alerts from 108. Stay active.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+          /* ─── AMBULANCE DRIVER APP VIEW — Rapido-style inline portal ─── */
+          <div style={{ maxWidth: 520, margin: '0 auto', paddingTop: 16 }}>
+            <AmbulanceDriverPortalInline onClose={null} inline={true} />
           </div>
         )}
       </div>

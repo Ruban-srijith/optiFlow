@@ -28,7 +28,7 @@ function calculateFare(stopCount) {
   return Math.max(5, stopCount * 2);
 }
 
-// Shared io — injected from server.js
+// Shared io - injected from server.js
 let io;
 router.setIO = (ioInstance) => { io = ioInstance; };
 
@@ -243,7 +243,7 @@ router.get('/status/:txnId', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// GET /api/payments — recent payments list
+// GET /api/payments - recent payments list
 // ---------------------------------------------------------------------------
 router.get('/', async (req, res) => {
   try {

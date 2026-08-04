@@ -136,10 +136,10 @@ export default function UserManagementPage() {
               users.map((u) => (
                 <tr key={u._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '12px 16px', fontWeight: 600, fontFamily: 'monospace' }}>{u.phone_number}</td>
-                  <td style={{ padding: '12px 16px', fontWeight: 500 }}>{u.full_name || '—'}</td>
+                  <td style={{ padding: '12px 16px', fontWeight: 500 }}>{u.full_name || '-'}</td>
                   <td style={{ padding: '12px 16px' }}>{getRoleBadge(u.role)}</td>
                   <td style={{ padding: '12px 16px', color: '#64748b' }}>
-                    {u.assigned_bus_id ? `<Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus ${u.assigned_bus_id}` : u.assigned_ambulance_id ? `<Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance ${u.assigned_ambulance_id}` : '—'}
+                    {u.assigned_bus_id ? `<Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus ${u.assigned_bus_id}` : u.assigned_ambulance_id ? `<Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance ${u.assigned_ambulance_id}` : '-'}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <button className="btn" style={{ fontSize: 12, padding: '4px 8px' }} onClick={() => openEditModal(u)}>

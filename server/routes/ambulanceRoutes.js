@@ -89,14 +89,15 @@ router.post(
       const availableAmbulance = await Ambulance.findOne({ status: 'available' });
 
       let assignedAmbulanceId = null;
+      // Status is 'pending' — driver must accept before becoming dispatched
       let newStatus = 'requested';
 
       if (availableAmbulance) {
         assignedAmbulanceId = availableAmbulance.ambulance_id;
-        availableAmbulance.status = 'en_route';
+        // Keep ambulance status as 'available' until driver explicitly accepts
         availableAmbulance.active_request_id = requestId;
         await availableAmbulance.save();
-        newStatus = 'dispatched';
+        newStatus = 'pending';
       }
 
       const emergencyRequest = new EmergencyRequest({
@@ -109,7 +110,7 @@ router.post(
         destination_hospital,
         status: newStatus,
         assigned_ambulance_id: assignedAmbulanceId,
-        green_corridor_active: priority === 'critical',
+        green_corridor_active: false,
         eta_minutes: Math.floor(Math.random() * 5) + 5,
         notes: notes || '',
       });
@@ -120,12 +121,11 @@ router.post(
       const io = req.app.get('io');
       if (io) {
         io.emit('emergency_alert', emergencyRequest);
+        // Send targeted dispatch call to the assigned driver's room
         if (availableAmbulance) {
-          io.emit('ambulance_position_update', {
-            ambulance_id: availableAmbulance.ambulance_id,
-            status: availableAmbulance.status,
-            current_location: availableAmbulance.current_location,
-          });
+          io.to(`driver_${availableAmbulance.ambulance_id}`).emit('dispatch_call', emergencyRequest);
+          // Also broadcast to all (so driver terminal polling picks it up)
+          io.emit('dispatch_call', emergencyRequest);
         }
       }
 
@@ -246,6 +246,108 @@ router.patch(
       }
 
       res.json(request);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// ---------------------------------------------------------------------------
+// POST /api/ambulances/request/:id/accept - Driver accepts dispatch call
+// Allow: ambulance_driver only
+// ---------------------------------------------------------------------------
+router.post(
+  '/request/:id/accept',
+  verifyToken,
+  verifyRole(['ambulance_driver']),
+  async (req, res) => {
+    try {
+      const request = await EmergencyRequest.findOne({ request_id: req.params.id });
+      if (!request) return res.status(404).json({ error: 'Emergency request not found' });
+
+      if (request.status !== 'pending') {
+        return res.status(400).json({ error: 'This dispatch is no longer pending acceptance' });
+      }
+
+      // Assign and update ambulance to en_route
+      const ambulance = await Ambulance.findOne({ ambulance_id: request.assigned_ambulance_id });
+      if (ambulance) {
+        ambulance.status = 'en_route';
+        await ambulance.save();
+      }
+
+      request.status = 'en_route';
+      request.green_corridor_active = request.priority === 'critical';
+      await request.save();
+
+      const io = req.app.get('io');
+      if (io) {
+        io.emit('emergency_status_update', request);
+        if (ambulance) {
+          io.emit('ambulance_position_update', {
+            ambulance_id: ambulance.ambulance_id,
+            status: ambulance.status,
+            current_location: ambulance.current_location,
+          });
+        }
+      }
+
+      res.json({ success: true, request, ambulance });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// ---------------------------------------------------------------------------
+// POST /api/ambulances/request/:id/decline - Driver declines dispatch call
+// Allow: ambulance_driver only
+// ---------------------------------------------------------------------------
+router.post(
+  '/request/:id/decline',
+  verifyToken,
+  verifyRole(['ambulance_driver']),
+  async (req, res) => {
+    try {
+      const request = await EmergencyRequest.findOne({ request_id: req.params.id });
+      if (!request) return res.status(404).json({ error: 'Emergency request not found' });
+
+      // Release the ambulance and try to find another
+      if (request.assigned_ambulance_id) {
+        await Ambulance.findOneAndUpdate(
+          { ambulance_id: request.assigned_ambulance_id },
+          { status: 'available', active_request_id: null }
+        );
+      }
+
+      // Try to find next available ambulance
+      const nextAmbulance = await Ambulance.findOne({
+        status: 'available',
+        ambulance_id: { $ne: request.assigned_ambulance_id },
+      });
+
+      if (nextAmbulance) {
+        request.assigned_ambulance_id = nextAmbulance.ambulance_id;
+        request.status = 'pending';
+        nextAmbulance.active_request_id = request.request_id;
+        await nextAmbulance.save();
+
+        const io = req.app.get('io');
+        if (io) {
+          io.to(`driver_${nextAmbulance.ambulance_id}`).emit('dispatch_call', request);
+          io.emit('dispatch_call', request);
+        }
+      } else {
+        request.assigned_ambulance_id = null;
+        request.status = 'requested';
+      }
+
+      await request.save();
+
+      const io = req.app.get('io');
+      if (io) io.emit('emergency_status_update', request);
+
+      res.json({ success: true, request });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

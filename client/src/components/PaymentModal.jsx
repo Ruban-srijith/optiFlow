@@ -3,13 +3,13 @@ import axios from 'axios';
 import { CreditCard, AlertTriangle, Lock, CheckCircle2, XCircle } from 'lucide-react';
 
 /**
- * PaymentModal — Razorpay online payment flow for passengers.
+ * PaymentModal - Razorpay online payment flow for passengers.
  *
  * Props:
- *   bus             — selected bus object with bus_id, free_seats, fare
- *   originStop      — { stop_id, stop_name }
- *   destinationStop — { stop_id, stop_name }
- *   onClose         — callback
+ *   bus             - selected bus object with bus_id, free_seats, fare
+ *   originStop      - { stop_id, stop_name }
+ *   destinationStop - { stop_id, stop_name }
+ *   onClose         - callback
  */
 export default function PaymentModal({ bus, originStop, destinationStop, onClose }) {
   const [mobile, setMobile] = useState('');

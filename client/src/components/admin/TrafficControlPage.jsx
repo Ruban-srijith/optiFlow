@@ -74,7 +74,7 @@ export default function TrafficControlPage() {
   const getSignalBadgeColor = (state) => {
     switch (state) {
       case 'normal': return { bg: '#e0f2fe', text: '#0369a1', border: '#bae6fd', label: 'Automated' };
-      case 'green_corridor_override': return { bg: '#dcfce7', text: '#15803d', border: '#bbf7d0', label: '🟢 Green Corridor Active' };
+      case 'green_corridor_override': return { bg: '#dcfce7', text: '#15803d', border: '#bbf7d0', label: '<Circle size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Green Corridor Active' };
       case 'manual_override': return { bg: '#fff7ed', text: '#c2410c', border: '#fed7aa', label: '🟠 Manual Override' };
       case 'emergency_flash': return { bg: '#fef2f2', text: '#b91c1c', border: '#fecaca', label: '🔴 Emergency Flash' };
       default: return { bg: '#f1f5f9', text: '#475569', border: '#e2e8f0', label: state };

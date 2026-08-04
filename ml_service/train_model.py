@@ -56,7 +56,7 @@ y = boardings
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # ---------------------------------------------------------------------------
-# LIGHTGBM TRAINING — CPU optimised (n_jobs=1, device=cpu)
+# LIGHTGBM TRAINING - CPU optimised (n_jobs=1, device=cpu)
 # ---------------------------------------------------------------------------
 model = lgb.LGBMRegressor(
     n_estimators=200,
@@ -78,7 +78,7 @@ model.fit(
 
 preds = model.predict(X_test)
 mae = mean_absolute_error(y_test, preds)
-print(f"✅ Training complete — MAE: {mae:.2f} passengers")
+print(f"✅ Training complete - MAE: {mae:.2f} passengers")
 
 joblib.dump(model, "model.pkl")
 print("💾 Model saved to model.pkl")

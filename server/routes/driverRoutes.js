@@ -23,7 +23,9 @@ router.get('/my-dispatches', async (req, res) => {
     }
 
     const dispatches = await EmergencyRequest.find(query).sort({ createdAt: -1 }).limit(10);
-    const activeDispatch = dispatches.find((d) => ['dispatched', 'on_scene', 'transporting'].includes(d.status)) || null;
+    const activeDispatch = dispatches.find((d) =>
+      ['pending', 'dispatched', 'en_route', 'arrived', 'transporting'].includes(d.status)
+    ) || null;
     
     let ambulanceInfo = null;
     if (ambulanceId) {
@@ -75,10 +77,17 @@ router.patch('/status', verifyRole(['ambulance_driver']), async (req, res) => {
       updatedRequest = await EmergencyRequest.findOne({ request_id: reqId });
       if (updatedRequest) {
         if (status) {
-          if (status === 'en_route') updatedRequest.status = 'dispatched';
-          if (status === 'on_scene') updatedRequest.status = 'on_scene';
+          if (status === 'en_route') updatedRequest.status = 'en_route';
+          if (status === 'arrived_pickup') updatedRequest.status = 'arrived';
           if (status === 'transporting') updatedRequest.status = 'transporting';
-          if (status === 'available') updatedRequest.status = 'completed';
+          if (status === 'completed') {
+            updatedRequest.status = 'completed';
+            // Release ambulance back to available
+            await Ambulance.findOneAndUpdate(
+              { ambulance_id: ambulanceId },
+              { status: 'available', active_request_id: null }
+            );
+          }
         }
         if (green_corridor_active !== undefined) {
           updatedRequest.green_corridor_active = green_corridor_active;

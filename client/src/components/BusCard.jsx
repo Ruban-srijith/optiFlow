@@ -3,11 +3,11 @@ import ForecastDrawer from './ForecastDrawer';
 import { Bus, MapPin } from 'lucide-react';
 
 /**
- * BusCard — displays bus info, occupancy, fare, forecast accordion, and Pay Online.
+ * BusCard - displays bus info, occupancy, fare, forecast accordion, and Pay Online.
  *
  * Props:
- *   bus         — bus object from search API
- *   onPayOnline — trigger payment modal
+ *   bus         - bus object from search API
+ *   onPayOnline - trigger payment modal
  */
 export default function BusCard({ bus, liveData, onSelect, selected, onPayOnline, onBookSeat, userRole }) {
   const freeSeats = liveData?.free_seats ?? bus.free_seats;
@@ -105,7 +105,7 @@ export default function BusCard({ bus, liveData, onSelect, selected, onPayOnline
       {/* Chips row & Actions */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
         <Chip icon={<MapPin size={12} color="#475569" />} label={`${bus.intermediate_stops} stops`} />
-        
+
         {userRole === 'passenger' && (
           <div style={{ display: 'flex', gap: 6 }}>
             <button

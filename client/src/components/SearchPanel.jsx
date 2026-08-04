@@ -9,7 +9,7 @@ const COIMBATORE_STOPS = [
 ];
 
 /**
- * SearchPanel — left sidebar with origin/destination inputs and bus result cards.
+ * SearchPanel - left sidebar with origin/destination inputs and bus result cards.
  *
  * Props:
  *   origin, destination: string state
@@ -95,7 +95,7 @@ export default function SearchPanel({
                 }}
                 title="Get nearest stop using your live GPS location"
               >
-                <span>📍</span> Use Live GPS
+                <span><MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span> Use Live GPS
               </button>
             )}
           </div>

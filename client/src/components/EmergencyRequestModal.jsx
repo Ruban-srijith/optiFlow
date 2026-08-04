@@ -337,7 +337,7 @@ export default function EmergencyRequestModal({ hospitals, onClose, onRequestCre
             {pickupType === 'current' ? (
               <div style={{ padding: 12, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 13, color: '#334155' }}>
                 {locating ? 'Fetching GPS location...' : (
-                  pickupCoords ? `📍 Location Found: [${pickupCoords[1].toFixed(4)}, ${pickupCoords[0].toFixed(4)}]` : 'GPS Failed. Please use Map.'
+                  pickupCoords ? `<MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Location Found: [${pickupCoords[1].toFixed(4)}, ${pickupCoords[0].toFixed(4)}]` : 'GPS Failed. Please use Map.'
                 )}
               </div>
             ) : (

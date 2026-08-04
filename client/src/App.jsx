@@ -176,12 +176,12 @@ export default function App() {
     }
   };
 
-  const mergedBuses = allBuses
-    .filter((b) => busPositions[b.bus_id] != null)
-    .map((b) => ({
-      ...b,
-      current_location: { coordinates: busPositions[b.bus_id] },
-    }));
+  const mergedBuses = allBuses.map((b) => ({
+    ...b,
+    current_location: busPositions[b.bus_id]
+      ? { coordinates: busPositions[b.bus_id] }
+      : b.current_location,
+  }));
 
   const handleSearch = async () => {
     if (!origin || !destination) return;
@@ -290,7 +290,7 @@ export default function App() {
           </span>
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 18, color: '#1e293b' }}>Opti</span>
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 18, color: portalMode === 'bus' ? '#16a34a' : '#dc2626' }}>
-            Flow
+          Flow
           </span>
         </div>
 
@@ -351,14 +351,6 @@ export default function App() {
         )}
 
         <div style={{ flex: 1 }} />
-
-        {/* Live dot */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span className="live-dot" style={{ background: connected ? '#16a34a' : '#ef4444' }} />
-          <span className="hide-on-mobile" style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>
-            {connected ? 'Live Sync' : 'Connecting...'}
-          </span>
-        </div>
 
         {['ambulance_driver', 'ambulance_admin', 'superadmin'].includes(passengerUser?.role) && (
           <>

@@ -1,5 +1,5 @@
 """
-OptiFlow ML Microservice — FastAPI
+OptiFlow ML Microservice - FastAPI
 Exposes /predict and /predict_route endpoints.
 
 Start: uvicorn ml_service:app --host 0.0.0.0 --port 8000 --reload

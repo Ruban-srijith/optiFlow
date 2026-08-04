@@ -25,7 +25,10 @@ const emojiMap = {
   '🎟️': 'Ticket',
   '👤': 'User',
   '💵': 'Banknote',
-  '📲': 'Smartphone'
+  '📲': 'Smartphone',
+  '✅': 'CheckCircle2',
+  '🛑': 'XCircle',
+  '🟢': 'Circle'
 };
 
 function getRequiredIcons(content) {
@@ -78,6 +81,5 @@ function walk(dir) {
   }
 }
 
-walk('g:/optiFlow/client/src/components/admin');
-walk('g:/optiFlow/admin/src');
-walk('g:/optiFlow/client-conductor/src');
+walk('c:/Users/guruv/OneDrive/Desktop/OptiFlow/client/src/components');
+walk('c:/Users/guruv/OneDrive/Desktop/OptiFlow/client-conductor/src/components');

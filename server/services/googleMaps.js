@@ -11,7 +11,7 @@ const DIRECTIONS_BASE = 'https://maps.googleapis.com/maps/api/directions/json';
  */
 async function getRoutePolyline(origin, destination) {
   if (!GMAPS_API_KEY || GMAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY') {
-    console.warn('⚠️  Google Maps API key not set — returning null polyline');
+    console.warn('⚠️  Google Maps API key not set - returning null polyline');
     return null;
   }
   try {

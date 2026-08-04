@@ -100,7 +100,7 @@ router.get('/search', verifyToken, denyRoles(['ambulance_driver']), async (req, 
         const standingPassengers = Math.max(0, currentPassengers - bus.seating_capacity);
         const fare = calculateFare(stopCount);
 
-        // ML Forecast — stop-by-stop prediction
+        // ML Forecast - stop-by-stop prediction
         let forecast = [];
         try {
           const stopsInRange = bus.route_stops
@@ -123,7 +123,7 @@ router.get('/search', verifyToken, denyRoles(['ambulance_driver']), async (req, 
           );
           forecast = mlRes.data.forecast || [];
         } catch (_) {
-          // ML service unavailable — generate simple fallback forecast
+          // ML service unavailable - generate simple fallback forecast
           const stopsInRange = bus.route_stops
             .filter((rs) => rs.sequence >= originEntry.sequence && rs.sequence <= destEntry.sequence)
             .sort((a, b) => a.sequence - b.sequence);
@@ -181,7 +181,7 @@ router.get('/search', verifyToken, denyRoles(['ambulance_driver']), async (req, 
 });
 
 // ---------------------------------------------------------------------------
-// GET /api/buses — list all buses with live positions
+// GET /api/buses - list all buses with live positions
 // Deny: ambulance_driver
 // ---------------------------------------------------------------------------
 router.get('/', verifyToken, denyRoles(['ambulance_driver']), async (req, res) => {
@@ -237,7 +237,7 @@ router.get('/', verifyToken, denyRoles(['ambulance_driver']), async (req, res) =
 });
 
 // ---------------------------------------------------------------------------
-// GET /api/buses/stops — list all stops
+// GET /api/buses/stops - list all stops
 // ---------------------------------------------------------------------------
 router.get('/stops', async (req, res) => {
   try {
@@ -264,7 +264,7 @@ router.get('/stops', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// POST /api/buses/occupancy — Mark bus occupancy (conductor / transit_admin)
+// POST /api/buses/occupancy - Mark bus occupancy (conductor / transit_admin)
 // ---------------------------------------------------------------------------
 router.post(
   '/occupancy',

@@ -1,4 +1,4 @@
-# 🚌 OptiFlow — Real-Time Public Transport Management System
+# 🚌 OptiFlow - Real-Time Public Transport Management System
 ### Coimbatore City Transit · MERN Stack + Google Maps
 
 A production-ready Proof of Concept for real-time bus tracking, live seat availability, and ML-powered passenger prediction for Coimbatore, Tamil Nadu.
@@ -63,7 +63,7 @@ cd e:\optiflow
    VITE_GOOGLE_MAPS_API_KEY=your_actual_key_here
    ```
 
-> **Note:** The app works without a key — maps render in fallback mode with straight-line routes.
+> **Note:** The app works without a key - maps render in fallback mode with straight-line routes.
 
 ---
 
@@ -114,28 +114,28 @@ Output:
 
 Open **4 separate terminals**:
 
-### Terminal 1 — Backend API
+### Terminal 1 - Backend API
 ```powershell
 cd e:\optiflow\server
 npm run dev
 # → http://localhost:5000
 ```
 
-### Terminal 2 — ML Microservice
+### Terminal 2 - ML Microservice
 ```powershell
 cd e:\optiflow\ml_service
 uvicorn ml_service:app --host 0.0.0.0 --port 8000 --reload
 # → http://localhost:8000
 ```
 
-### Terminal 3 — Frontend
+### Terminal 3 - Frontend
 ```powershell
 cd e:\optiflow\client
 npm run dev
 # → http://localhost:5173
 ```
 
-### Terminal 4 — Fleet Simulator (optional, for live demo)
+### Terminal 4 - Fleet Simulator (optional, for live demo)
 ```powershell
 cd e:\optiflow\server
 npm run simulate
@@ -177,11 +177,11 @@ npm run simulate
 }
 ```
 
-### `GET /api/buses` — all buses with live positions
-### `GET /api/buses/stops` — all stops
-### `GET /api/tickets` — recent 50 tickets
+### `GET /api/buses` - all buses with live positions
+### `GET /api/buses/stops` - all stops
+### `GET /api/tickets` - recent 50 tickets
 
-### ML Service — `POST http://localhost:8000/predict_route`
+### ML Service - `POST http://localhost:8000/predict_route`
 ```json
 {
   "stops": [105, 106, 107],
@@ -218,11 +218,11 @@ npm run simulate
 
 ## Hardware Requirements
 
-- **CPU:** Intel Core i5 (or equivalent) — all ML runs single-core
+- **CPU:** Intel Core i5 (or equivalent) - all ML runs single-core
 - **RAM:** 4 GB minimum, 8 GB recommended
 - **GPU:** Not required
 - **OS:** Windows / macOS / Linux
 
 ---
 
-*Built with ❤️ for Coimbatore City — OptiFlow v1.0.0*
+*Built with ❤️ for Coimbatore City - OptiFlow v1.0.0*
