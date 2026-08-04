@@ -159,32 +159,6 @@ export default function BookingsPage() {
                   </div>
                 </div>
 
-                {/* Inline Editing */}
-                {isEditing && (
-                  <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', padding: 12, borderRadius: 8, marginTop: 6 }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                      Change Seats Count:
-                    </label>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <input
-                        type="number"
-                        min={1}
-                        max={6}
-                        value={newSeatCount}
-                        onChange={(e) => setNewSeatCount(Number(e.target.value))}
-                        className="input-field"
-                        style={{ width: 60, padding: 6, textAlign: 'center' }}
-                      />
-                      <button onClick={() => handleModifySubmit(booking.booking_id)} className="btn-primary" style={{ padding: '6px 12px', fontSize: 12 }}>
-                        Save
-                      </button>
-                      <button onClick={() => setEditingBooking(null)} className="btn-outline" style={{ padding: '6px 12px', fontSize: 12 }}>
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-
                 {/* Inline Cancellation Form */}
                 {isCancelling && (
                   <div style={{ background: '#fef2f2', border: '1.5px solid #fca5a5', padding: 12, borderRadius: 8, marginTop: 6 }}>
@@ -226,18 +200,8 @@ export default function BookingsPage() {
                 )}
 
                 {/* Actions */}
-                {isBooked && !isEditing && !isCancelling && (
+                {isBooked && !isCancelling && (
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, borderTop: '1px solid #f1f5f9', paddingTop: 10, marginTop: 'auto' }}>
-                    <button
-                      onClick={() => {
-                        setEditingBooking(booking.booking_id);
-                        setNewSeatCount(booking.seat_count);
-                      }}
-                      className="btn-outline"
-                      style={{ padding: '6px 12px', display: 'inline-flex', gap: 4, alignItems: 'center', fontSize: 11 }}
-                    >
-                      <Edit3 size={12} /> Modify Seats
-                    </button>
                     <button
                       onClick={() => setCancellingBooking(booking.booking_id)}
                       className="btn-outline"
