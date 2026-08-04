@@ -171,6 +171,7 @@ const buses = [
     bus_id: 'TN-38-N-1234', bus_number: '1D',
     route_name: 'Ondipudur → Maruthamalai',
     seating_capacity: 40, standing_capacity: 20,
+    current_occupancy_seated: 32, current_occupancy_standing: 8,
     current_location: { type: 'Point', coordinates: [77.0326, 11.0012] },
     current_stop_sequence: 0,
     route_stops: [
@@ -184,6 +185,7 @@ const buses = [
     bus_id: 'TN-38-N-5678', bus_number: '3D',
     route_name: 'Ganapathy → Kovaipudur',
     seating_capacity: 40, standing_capacity: 20,
+    current_occupancy_seated: 25, current_occupancy_standing: 0,
     current_location: { type: 'Point', coordinates: [76.9977, 11.0385] },
     current_stop_sequence: 0,
     route_stops: [
@@ -196,6 +198,7 @@ const buses = [
     bus_id: 'TN-38-N-9012', bus_number: '11A',
     route_name: 'Ukkadam → Thudiyalur',
     seating_capacity: 40, standing_capacity: 20,
+    current_occupancy_seated: 40, current_occupancy_standing: 18,
     current_location: { type: 'Point', coordinates: [76.9715, 10.9913] },
     current_stop_sequence: 0,
     route_stops: [
@@ -203,6 +206,152 @@ const buses = [
       { stop_id: 301, sequence: 2 }, { stop_id: 105, sequence: 3 },
       { stop_id: 302, sequence: 4 }, { stop_id: 303, sequence: 5 },
     ],
+  },
+  {
+    bus_id: 'TN-38-N-4545', bus_number: '45B',
+    route_name: 'Railway Station → Airport (SITRA)',
+    seating_capacity: 40, standing_capacity: 20,
+    current_occupancy_seated: 18, current_occupancy_standing: 0,
+    current_location: { type: 'Point', coordinates: [76.9642, 11.0006] },
+    current_stop_sequence: 0,
+    route_stops: [
+      { stop_id: 301, sequence: 0 }, { stop_id: 203, sequence: 1 },
+      { stop_id: 104, sequence: 2 }, { stop_id: 401, sequence: 3 },
+      { stop_id: 402, sequence: 4 }, { stop_id: 403, sequence: 5 },
+    ],
+  },
+  {
+    bus_id: 'TN-38-N-7070', bus_number: '70',
+    route_name: 'Gandhipuram → Pollachi Express',
+    seating_capacity: 40, standing_capacity: 20,
+    current_occupancy_seated: 36, current_occupancy_standing: 4,
+    current_location: { type: 'Point', coordinates: [76.9629, 11.0168] },
+    current_stop_sequence: 0,
+    route_stops: [
+      { stop_id: 105, sequence: 0 }, { stop_id: 203, sequence: 1 },
+      { stop_id: 204, sequence: 2 }, { stop_id: 410, sequence: 3 },
+      { stop_id: 411, sequence: 4 }, { stop_id: 412, sequence: 5 },
+      { stop_id: 413, sequence: 6 }, { stop_id: 414, sequence: 7 },
+    ],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// INITIAL BOOKINGS & TICKETS
+// ---------------------------------------------------------------------------
+const initialBookings = [
+  {
+    booking_id: 'BKG-908123',
+    user_id: 'USR-PASSENGER-1',
+    user_phone: '+919876543215',
+    user_name: 'Anand R.',
+    bus_id: 'TN-38-N-1234',
+    bus_number: '1D',
+    route_name: 'Ondipudur → Maruthamalai',
+    origin_stop_id: 105,
+    origin_stop_name: 'Gandhipuram',
+    destination_stop_id: 108,
+    destination_stop_name: 'Maruthamalai',
+    seat_count: 2,
+    fare: 30,
+    status: 'booked',
+  },
+  {
+    booking_id: 'BKG-908124',
+    user_id: 'USR-PASSENGER-1',
+    user_phone: '+919876543215',
+    user_name: 'Anand R.',
+    bus_id: 'TN-38-N-5678',
+    bus_number: '3D',
+    route_name: 'Ganapathy → Kovaipudur',
+    origin_stop_id: 201,
+    origin_stop_name: 'Ganapathy',
+    destination_stop_id: 204,
+    destination_stop_name: 'Ukkadam',
+    seat_count: 1,
+    fare: 15,
+    status: 'booked',
+  },
+  {
+    booking_id: 'BKG-908125',
+    user_id: 'USR-PASSENGER-2',
+    user_phone: '+919876543216',
+    user_name: 'K. Vijay',
+    bus_id: 'TN-38-N-9012',
+    bus_number: '11A',
+    route_name: 'Ukkadam → Thudiyalur',
+    origin_stop_id: 204,
+    origin_stop_name: 'Ukkadam',
+    destination_stop_id: 303,
+    destination_stop_name: 'Thudiyalur',
+    seat_count: 4,
+    fare: 60,
+    status: 'completed',
+  },
+  {
+    booking_id: 'BKG-908126',
+    user_id: 'USR-PASSENGER-3',
+    user_phone: '+919876543217',
+    user_name: 'Deepak N.',
+    bus_id: 'TN-38-N-1234',
+    bus_number: '1D',
+    route_name: 'Ondipudur → Maruthamalai',
+    origin_stop_id: 101,
+    origin_stop_name: 'Ondipudur',
+    destination_stop_id: 105,
+    destination_stop_name: 'Gandhipuram',
+    seat_count: 1,
+    fare: 20,
+    status: 'cancelled',
+    cancelled_by: 'USR-PASSENGER-3',
+    cancel_reason: 'Plans changed',
+  },
+];
+
+const initialTickets = [
+  {
+    ticket_id: 'TCK-88102',
+    bus_id: 'TN-38-N-1234',
+    bus_number: '1D',
+    origin_stop_id: 101,
+    destination_stop_id: 105,
+    passenger_count: 2,
+    fare_paid: 30,
+    payment_method: 'cash',
+    issued_by_conductor: 'conductor1',
+  },
+  {
+    ticket_id: 'TCK-88103',
+    bus_id: 'TN-38-N-1234',
+    bus_number: '1D',
+    origin_stop_id: 105,
+    destination_stop_id: 108,
+    passenger_count: 1,
+    fare_paid: 18,
+    payment_method: 'online',
+    issued_by_conductor: 'conductor1',
+  },
+  {
+    ticket_id: 'TCK-88104',
+    bus_id: 'TN-38-N-5678',
+    bus_number: '3D',
+    origin_stop_id: 201,
+    destination_stop_id: 204,
+    passenger_count: 3,
+    fare_paid: 45,
+    payment_method: 'cash',
+    issued_by_conductor: 'conductor2',
+  },
+  {
+    ticket_id: 'TCK-88105',
+    bus_id: 'TN-38-N-9012',
+    bus_number: '11A',
+    origin_stop_id: 204,
+    destination_stop_id: 303,
+    passenger_count: 2,
+    fare_paid: 32,
+    payment_method: 'online',
+    issued_by_conductor: 'conductor3',
   },
 ];
 
@@ -216,6 +365,7 @@ const conductorPlain = [
     full_name: 'Rajan K.',
     employee_id: 'EMP-1001',
     assigned_bus_id: 'TN-38-N-1234', // Route 1D
+    phone_number: '+919876543213',
   },
   {
     username: 'conductor2',
@@ -230,6 +380,20 @@ const conductorPlain = [
     full_name: 'Murugan R.',
     employee_id: 'EMP-1003',
     assigned_bus_id: 'TN-38-N-9012', // Route 11A
+  },
+  {
+    username: 'conductor4',
+    password: 'conductor123',
+    full_name: 'K. Vimal',
+    employee_id: 'EMP-1004',
+    assigned_bus_id: 'TN-38-N-4545', // Route 45B
+  },
+  {
+    username: 'conductor5',
+    password: 'conductor123',
+    full_name: 'S. Anbu',
+    employee_id: 'EMP-1005',
+    assigned_bus_id: 'TN-38-N-7070', // Route 70
   },
 ];
 
@@ -347,6 +511,12 @@ async function seed() {
 
     await Intersection.insertMany(intersections);
     console.log(`✅ Seeded ${intersections.length} traffic intersections`);
+
+    await Booking.insertMany(initialBookings);
+    console.log(`✅ Seeded ${initialBookings.length} passenger seat bookings`);
+
+    await Ticket.insertMany(initialTickets);
+    console.log(`✅ Seeded ${initialTickets.length} POS ticket sales`);
 
     // Hash passwords and insert conductors
     const conductors = await Promise.all(
