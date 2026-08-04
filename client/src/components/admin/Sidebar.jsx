@@ -1,4 +1,5 @@
 import React from 'react';
+import { BarChart, Users, Bus, Map, UserSquare2, Ticket, Coins, Ambulance, Siren, TrafficCone } from 'lucide-react';
 
 export default function Sidebar({ page, setPage, admin, onLogout }) {
   const role = admin?.role || 'superadmin';
@@ -8,7 +9,7 @@ export default function Sidebar({ page, setPage, admin, onLogout }) {
   const isAmbulance = isSuper || role === 'ambulance_admin';
 
   return (
-    <aside className="sidebar">
+    <aside className="admin-sidebar">
       <div className="sidebar-brand">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 22 }}>⚡</span>

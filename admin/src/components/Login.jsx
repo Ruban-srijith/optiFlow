@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { adminLogin, sendOtp, verifyOtp } from '../services/api';
+import { Smartphone, Bus, Ambulance } from 'lucide-react';
 
 export default function Login({ onLogin }) {
   const [loginMethod, setLoginMethod] = useState('otp'); // 'otp' or 'password'
@@ -122,7 +123,7 @@ export default function Login({ onLogin }) {
                 disabled={loading}
                 style={{ marginTop: 4, justifyContent: 'center', padding: '11px 0' }}
               >
-                {loading ? <span className="spinner" /> : '<Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Send OTP Code'}
+                {loading ? <span className="spinner" /> : <><Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Send OTP Code</>}
               </button>
             </form>
           ) : (

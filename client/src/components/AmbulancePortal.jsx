@@ -8,6 +8,7 @@ export default function AmbulancePortal({
   selectedAmbulance,
   onSelectAmbulance,
   socketUpdates,
+  passengerUser,
 }) {
   const [ambulances, setAmbulances] = useState([]);
   const [hospitals, setHospitals] = useState([]);
@@ -59,7 +60,7 @@ export default function AmbulancePortal({
       {/* ── EMERGENCY HOTLINE BANNER ── */}
       <div
         style={{
-          background: 'linear-[#991b1b], linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+          background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
           color: '#ffffff',
           borderRadius: 14,
           padding: '16px 20px',
@@ -220,6 +221,7 @@ export default function AmbulancePortal({
       {showModal && (
         <EmergencyRequestModal
           hospitals={hospitals}
+          passengerUser={passengerUser}
           onClose={() => setShowModal(false)}
           onRequestCreated={(req) => {
             setActiveEmergency(req);

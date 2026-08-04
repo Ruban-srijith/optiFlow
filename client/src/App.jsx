@@ -136,7 +136,7 @@ export default function App() {
     }
   }, [passengerUser]);
 
-  const { busPositions, busUpdates, connected } = useSocket();
+  const { busPositions, busUpdates, ambulancePositions, connected } = useSocket();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
@@ -449,6 +449,7 @@ export default function App() {
               selectedAmbulance={selectedAmbulance}
               onSelectAmbulance={setSelectedAmbulance}
               socketUpdates={busUpdates}
+              passengerUser={passengerUser}
             />
           )}
         </aside>
@@ -464,6 +465,7 @@ export default function App() {
             originStop={originStop}
             destinationStop={destinationStop}
             ambulances={ambulances}
+            ambulancePositions={ambulancePositions}
             hospitals={hospitals}
             userLocation={userLocation}
           />

@@ -12,7 +12,7 @@ const { verifyToken, verifyRole } = require('../middleware/authMiddleware');
 router.get(
   '/',
   verifyToken,
-  verifyRole(['ambulance_driver', 'ambulance_admin']),
+  verifyRole(['ambulance_driver', 'ambulance_admin', 'passenger']),
   async (req, res) => {
     try {
       const ambulances = await Ambulance.find();
@@ -30,7 +30,7 @@ router.get(
 router.get(
   '/hospitals',
   verifyToken,
-  verifyRole(['ambulance_driver', 'ambulance_admin']),
+  verifyRole(['ambulance_driver', 'ambulance_admin', 'passenger']),
   async (req, res) => {
     try {
       const hospitals = await Hospital.find();
@@ -43,12 +43,12 @@ router.get(
 
 // ---------------------------------------------------------------------------
 // POST /api/ambulances/request - Create emergency call & auto-assign ambulance
-// Allow: ambulance_driver only
+// Allow: ambulance_driver, passenger
 // ---------------------------------------------------------------------------
 router.post(
   '/request',
   verifyToken,
-  verifyRole(['ambulance_driver']),
+  verifyRole(['ambulance_driver', 'passenger']),
   async (req, res) => {
     try {
       const {
@@ -125,7 +125,7 @@ router.post(
 router.get(
   '/requests',
   verifyToken,
-  verifyRole(['ambulance_driver', 'ambulance_admin']),
+  verifyRole(['ambulance_driver', 'ambulance_admin', 'passenger']),
   async (req, res) => {
     try {
       let filter = {};

@@ -12,24 +12,10 @@ import {
   toggleGreenCorridor,
   getMyDispatches,
   getTurnByTurn,
+  fetchAmbulances,
 } from '../services/api';
-import {
-  ShieldAlert,
-  RefreshCw,
-  Radio,
-  AlertCircle,
-  Play,
-  CheckCircle2,
-  RotateCcw,
-  Navigation,
-  Compass,
-  Users,
-  TrendingUp,
-  MapPin,
-  Map,
-  PlusCircle,
-  CheckCircle,
-} from 'lucide-react';
+import DriverMap from './DriverMap';
+import { ShieldAlert, RefreshCw, Radio, AlertCircle, Play, CheckCircle2, RotateCcw, Navigation, Compass, Users, TrendingUp, MapPin, Map, PlusCircle, CheckCircle, Ticket, Bus, Ambulance, User, Banknote, Smartphone, Siren, Hospital, Flame, TrafficCone } from 'lucide-react';
 
 const STOP_NAMES = {
   101: 'Ondipudur',     102: 'Singanallur',     103: 'Ramanathapuram',
@@ -289,6 +275,8 @@ export default function ConductorDashboard({ conductor, onLogout }) {
   const [routeSummary, setRouteSummary] = useState(null);
   const [loadingDispatch, setLoadingDispatch] = useState(false);
   const [updatingAmb, setUpdatingAmb] = useState(false);
+  const [allAmbulances, setAllAmbulances] = useState([]);
+  const [driverLocation, setDriverLocation] = useState(null);
 
   // Bus terminal state
   const [buses, setBuses] = useState([]);
@@ -303,13 +291,14 @@ export default function ConductorDashboard({ conductor, onLogout }) {
   const [qrData, setQrData] = useState(null);
   const [recentTickets, setRecentTickets] = useState([]);
   const [gpsActive, setGpsActive] = useState(false);
+  const [acceptedDispatchId, setAcceptedDispatchId] = useState(null);
   
   // Occupancy override state
   const [seatedOverride, setSeatedOverride] = useState(0);
   const [standingOverride, setStandingOverride] = useState(0);
   const [savingOccupancy, setSavingOccupancy] = useState(false);
 
-  const { busUpdates, connected, socketRef } = useSocket();
+  const { busPositions, busUpdates, ambulancePositions, connected, socketRef } = useSocket();
 
   // Load Bus details
   useEffect(() => {
@@ -322,6 +311,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
         setSelectedBusId(res.data[0].bus_id);
       }
     });
+    fetchAmbulances().then((res) => setAllAmbulances(res.data)).catch(() => {});
   }, [conductor]);
 
   useEffect(() => {
@@ -353,6 +343,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
       (position) => {
         setGpsActive(true);
         const { latitude, longitude } = position.coords;
+        setDriverLocation([longitude, latitude]);
         socketRef.current?.emit('bus_location_update', {
           bus_id: selectedBusId,
           coordinates: [longitude, latitude],
@@ -435,6 +426,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
       async (pos) => {
         if (!ambulanceId) return;
         const { latitude, longitude } = pos.coords;
+        setDriverLocation([longitude, latitude]);
         
         // Sockets emit
         socketRef.current?.emit('ambulance_location_update', {
@@ -669,6 +661,21 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {dispatchData?.ambulance?.status === 'en_route' && acceptedDispatchId !== dispatchData?.active_dispatch?.request_id && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="card" style={{ padding: 30, background: '#fff', borderRadius: 12, textAlign: 'center', maxWidth: 400, width: '90%' }}>
+            <Siren size={48} color="#dc2626" style={{ margin: '0 auto 16px', display: 'block' }} />
+            <h2 style={{ fontSize: 24, fontWeight: 900, color: '#dc2626', margin: '0 0 8px 0' }}>EMERGENCY DISPATCH</h2>
+            <p style={{ fontSize: 14, color: '#475569', marginBottom: 20 }}>
+              You have been assigned a new emergency call. Please accept to proceed.
+            </p>
+            <button onClick={() => setAcceptedDispatchId(dispatchData.active_dispatch.request_id)} style={{ width: '100%', padding: '16px 0', fontSize: 18, fontWeight: 800, background: '#16a34a', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
+              ACCEPT PATIENT
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="navbar" style={{ background: '#1e293b', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', padding: '10px 20px', color: '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -677,50 +684,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 16, color: driverRole === 'conductor' ? '#16a34a' : '#ef4444' }}>Flow</span>
         </div>
 
-        {/* ── ROLE SWITCHER PILL ── */}
-        <div
-          style={{
-            display: 'flex',
-            background: '#334155',
-            borderRadius: 99,
-            padding: 3,
-            border: '1px solid #475569',
-            margin: '0 16px',
-          }}
-        >
-          <button
-            onClick={() => setDriverRole('conductor')}
-            style={{
-              background: driverRole === 'conductor' ? '#16a34a' : 'transparent',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 99,
-              padding: '6px 14px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <Bus size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Bus Conductor
-          </button>
-          <button
-            onClick={() => setDriverRole('ambulance_driver')}
-            style={{
-              background: driverRole === 'ambulance_driver' ? '#dc2626' : 'transparent',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 99,
-              padding: '6px 14px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <Ambulance size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Ambulance Driver
-          </button>
-        </div>
+
 
         <div style={{ flex: 1 }} />
 
@@ -770,6 +734,16 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
       {/* Body Layout */}
       <div className="dashboard-layout" style={{ flex: 1, padding: 20, overflowY: 'auto' }}>
+        <DriverMap
+          driverRole={driverRole}
+          driverLocation={driverLocation}
+          allBuses={buses}
+          allAmbulances={allAmbulances}
+          busPositions={busPositions}
+          ambulancePositions={ambulancePositions}
+          activeDispatch={dispatchData?.active_dispatch}
+        />
+
         {driverRole === 'conductor' ? (
           /* ─── CONDUCTOR APP VIEW ─── */
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 20, alignItems: 'flex-start' }}>
@@ -1102,42 +1076,57 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                     <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: 12, marginBottom: 12 }}>
                       <div style={{ fontSize: 10, fontWeight: 800, color: '#ef4444', textTransform: 'uppercase' }}>VEHICLE VERIFIED</div>
                       <div style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', marginTop: 2 }}>{ambulanceId}</div>
-                      {dispatchData?.ambulance?.hospital_name && (
+                      {dispatchData?.ambulance?.hospital_name && (dispatchData?.ambulance?.status !== 'offline') && (
                         <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>Stationed: {dispatchData.ambulance.hospital_name}</div>
                       )}
                     </div>
 
                     <label style={{ fontSize: 10, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>EMERGENCY STATUS</label>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      {[
-                        { val: 'available', label: '✅ Available', color: '#16a34a' },
-                        { val: 'en_route', label: '<Siren size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Dispatch Call', color: '#2563eb' },
-                        { val: 'on_scene', label: '<MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Arrived Pickup', color: '#d97706' },
-                        { val: 'transporting', label: '<Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Transporting', color: '#7c3aed' },
-                      ].map((st) => {
-                        const isCurrent = (dispatchData?.ambulance?.status || 'available') === st.val;
-                        return (
-                          <button
-                            key={st.val}
-                            onClick={() => handleAmbStatusChange(st.val)}
-                            disabled={updatingAmb}
-                            style={{
-                              padding: '10px 6px',
-                              borderRadius: 8,
-                              fontSize: 11,
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                              border: isCurrent ? `2.5px solid ${st.color}` : '1px solid #cbd5e1',
-                              background: isCurrent ? '#f8fafc' : '#fff',
-                              color: isCurrent ? st.color : '#475569',
-                            }}
-                          >
-                            {st.label}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {(() => {
+                      const currentStatus = dispatchData?.ambulance?.status || 'available';
+                      
+                      return (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                          {/* Availability Toggle - Only when no active dispatch */}
+                          {(!dispatchData?.active_dispatch || currentStatus === 'available' || currentStatus === 'offline') && (
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              <button
+                                onClick={() => handleAmbStatusChange('available')}
+                                disabled={updatingAmb}
+                                style={{ flex: 1, padding: '12px 0', borderRadius: 8, background: currentStatus === 'available' ? '#16a34a' : '#f8fafc', color: currentStatus === 'available' ? '#fff' : '#64748b', fontWeight: 700, border: currentStatus === 'available' ? 'none' : '1px solid #cbd5e1', cursor: 'pointer' }}
+                              >
+                                ✅ Available
+                              </button>
+                              <button
+                                onClick={() => handleAmbStatusChange('offline')}
+                                disabled={updatingAmb}
+                                style={{ flex: 1, padding: '12px 0', borderRadius: 8, background: currentStatus === 'offline' ? '#ef4444' : '#f8fafc', color: currentStatus === 'offline' ? '#fff' : '#64748b', fontWeight: 700, border: currentStatus === 'offline' ? 'none' : '1px solid #cbd5e1', cursor: 'pointer' }}
+                              >
+                                🛑 Offline
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Active Dispatch Action Buttons */}
+                          {currentStatus === 'en_route' && (
+                            <button onClick={() => handleAmbStatusChange('on_scene')} disabled={updatingAmb} className="btn-primary" style={{ width: '100%', padding: '16px 0', fontSize: 16, background: '#d97706', justifyContent: 'center' }}>
+                              📍 Arrived Pickup
+                            </button>
+                          )}
+                          {currentStatus === 'on_scene' && (
+                            <button onClick={() => handleAmbStatusChange('transporting')} disabled={updatingAmb} className="btn-primary" style={{ width: '100%', padding: '16px 0', fontSize: 16, background: '#7c3aed', justifyContent: 'center' }}>
+                              🏥 Transporting
+                            </button>
+                          )}
+                          {currentStatus === 'transporting' && (
+                            <button onClick={() => handleAmbStatusChange('available')} disabled={updatingAmb} className="btn-primary" style={{ width: '100%', padding: '16px 0', fontSize: 16, background: '#16a34a', justifyContent: 'center' }}>
+                              ✅ Reached Hospital / Free
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <div className="card" style={{ padding: 16, background: '#f8fafc' }}>
@@ -1180,99 +1169,13 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                         <MapPin size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Pickup: <strong>{dispatchData.active_dispatch.pickup_location?.name || 'Gandhipuram Junction'}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 4 }}>
-                        <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination: <strong>{dispatchData.active_dispatch.destination_hospital}</strong>
+                        <Hospital size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Destination: <strong>{dispatchData.active_dispatch.destination_hospital?.name || dispatchData.active_dispatch.destination_hospital}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 12 }}>
                         📞 Contact: <strong>{dispatchData.active_dispatch.contact_phone}</strong>
                       </div>
 
-                      {/* Green Corridor Trigger Toggle */}
-                      <div
-                        style={{
-                          background: dispatchData.active_dispatch.green_corridor_active ? '#dcfce7' : '#fff',
-                          border: `1.5px solid ${dispatchData.active_dispatch.green_corridor_active ? '#22c55e' : '#cbd5e1'}`,
-                          borderRadius: 10,
-                          padding: 12,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginTop: 10,
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 20 }}><TrafficCone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /></span>
-                          <div>
-                            <div style={{ fontSize: 12, fontWeight: 800, color: dispatchData.active_dispatch.green_corridor_active ? '#15803d' : '#475569' }}>
-                              Green Corridor {dispatchData.active_dispatch.green_corridor_active ? 'ENABLED' : 'DISABLED'}
-                            </div>
-                            <div style={{ fontSize: 9, color: '#64748b' }}>Triggers priority timing overrides at junctions</div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => handleCorridorToggle(!dispatchData.active_dispatch.green_corridor_active)}
-                          disabled={updatingAmb}
-                          style={{
-                            padding: '8px 12px',
-                            background: dispatchData.active_dispatch.green_corridor_active ? '#dc2626' : '#16a34a',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 6,
-                            fontWeight: 700,
-                            fontSize: 11,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {dispatchData.active_dispatch.green_corridor_active ? 'Deactivate' : 'Activate Priority'}
-                        </button>
-                      </div>
                     </div>
-
-                    {/* Turn-by-Turn Route Instructions */}
-                    {turnSteps.length > 0 && (
-                      <div className="card" style={{ padding: 18 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                          <h4 style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <Navigation size={16} color="#3b82f6" /> Emergency Routing Directions
-                          </h4>
-                          {routeSummary && (
-                            <span style={{ fontSize: 11, color: '#15803d', background: '#dcfce7', padding: '2px 8px', borderRadius: 99, fontWeight: 700 }}>
-                              {routeSummary.distance} · {routeSummary.duration}
-                            </span>
-                          )}
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                          {turnSteps.map((step, idx) => (
-                            <div key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20 }}>
-                                <span
-                                  style={{
-                                    width: 18, height: 18, borderRadius: '50%',
-                                    background: '#3b82f6', color: '#fff',
-                                    fontSize: 10, fontWeight: 800,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  }}
-                                >
-                                  {idx + 1}
-                                </span>
-                                {idx < turnSteps.length - 1 && (
-                                  <div style={{ width: 2, height: 26, background: '#cbd5e1', marginTop: 4 }} />
-                                )}
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>
-                                  {step.instruction}
-                                </div>
-                                <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>
-                                  {step.distance} · {step.duration}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </>
                 ) : (
                   /* Available / Standby Case */

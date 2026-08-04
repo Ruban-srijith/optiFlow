@@ -33,6 +33,7 @@ export const searchBuses = (origin, destination) =>
   });
 
 export const fetchAllBuses = () => api.get('/buses');
+export const fetchAmbulances = () => api.get('/ambulances');
 export const fetchStops = () => api.get('/buses/stops');
 
 /**
@@ -49,7 +50,6 @@ export const updateBusOccupancy = (payload) => api.post('/buses/occupancy', payl
 /**
  * Ambulance & Emergency Response (Driver & Client)
  */
-export const fetchAmbulances = () => api.get('/ambulances');
 export const fetchHospitals = () => api.get('/ambulances/hospitals');
 export const createEmergencyRequest = (payload) => api.post('/ambulances/request', payload);
 export const fetchEmergencyRequests = () => api.get('/ambulances/requests');

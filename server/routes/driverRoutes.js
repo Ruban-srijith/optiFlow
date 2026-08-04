@@ -155,19 +155,51 @@ router.get('/turn-by-turn', verifyRole(['ambulance_driver']), async (req, res) =
       return res.status(400).json({ error: 'pickup_lat, pickup_lng, dest_lat, dest_lng are required' });
     }
 
-    // Build route instructions (simplified — in production, call Google Directions API)
+    // Call OSRM API for real routing steps
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${pickup_lng},${pickup_lat};${dest_lng},${dest_lat}?overview=false&steps=true`;
+    
+    const response = await fetch(osrmUrl);
+    const data = await response.json();
+    
+    let steps = [];
+    let total_distance = '0 km';
+    let total_duration = '0 min';
+    
+    if (data.routes && data.routes.length > 0) {
+      const leg = data.routes[0].legs[0];
+      
+      total_distance = (leg.distance / 1000).toFixed(1) + ' km';
+      total_duration = Math.ceil(leg.duration / 60) + ' min';
+      
+      steps = leg.steps.map(step => {
+        const maneuver = step.maneuver;
+        let instruction = maneuver.type;
+        if (maneuver.modifier) instruction += ' ' + maneuver.modifier;
+        if (step.name) instruction += ' onto ' + step.name;
+        
+        // Capitalize first letter
+        instruction = instruction.charAt(0).toUpperCase() + instruction.slice(1);
+        
+        let distStr = step.distance > 1000 
+          ? (step.distance / 1000).toFixed(1) + ' km'
+          : Math.round(step.distance) + ' m';
+          
+        let durStr = Math.ceil(step.duration / 60) + ' min';
+        
+        return {
+          instruction,
+          distance: distStr,
+          duration: durStr
+        };
+      });
+    }
+
     const route = {
       origin: { lat: Number(pickup_lat), lng: Number(pickup_lng) },
       destination: { lat: Number(dest_lat), lng: Number(dest_lng) },
-      steps: [
-        { instruction: 'Head north on current road', distance: '200m', duration: '1 min' },
-        { instruction: 'Turn right at the intersection', distance: '500m', duration: '2 min' },
-        { instruction: 'Continue straight — Green Corridor Active', distance: '1.2km', duration: '3 min' },
-        { instruction: 'Turn left onto destination road', distance: '300m', duration: '1 min' },
-        { instruction: 'Arrive at destination', distance: '0m', duration: '0 min' },
-      ],
-      total_distance: '2.2km',
-      total_duration: '7 min',
+      steps,
+      total_distance,
+      total_duration,
       green_corridor_active: true,
     };
 

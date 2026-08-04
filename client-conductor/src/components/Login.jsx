@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { login, sendOtp, verifyOtp } from '../services/api';
+import { Smartphone, Bus, AlertTriangle } from 'lucide-react';
 
 /**
  * Login page for the Conductor App with Phone OTP & Password options.
@@ -169,7 +170,7 @@ export default function Login({ onLogin }) {
                   </div>
                 </div>
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15 }} disabled={loading}>
-                  {loading ? <span className="spinner" /> : '<Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Send OTP Code'}
+                  {loading ? <span className="spinner" /> : <><Smartphone size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Send OTP Code</>}
                 </button>
               </form>
             ) : (

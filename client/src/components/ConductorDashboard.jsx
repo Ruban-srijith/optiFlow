@@ -12,7 +12,9 @@ import {
   toggleGreenCorridor,
   getMyDispatches,
   getTurnByTurn,
+  fetchAmbulances,
 } from '../services/api';
+import DriverMap from './DriverMap';
 import {
   ShieldAlert,
   RefreshCw,
@@ -29,6 +31,16 @@ import {
   Map,
   PlusCircle,
   CheckCircle,
+  Ticket,
+  Bus,
+  Ambulance,
+  User,
+  Banknote,
+  Smartphone,
+  Siren,
+  Hospital,
+  Flame,
+  TrafficCone,
 } from 'lucide-react';
 
 const STOP_NAMES = {
@@ -289,6 +301,8 @@ export default function ConductorDashboard({ conductor, onLogout }) {
   const [routeSummary, setRouteSummary] = useState(null);
   const [loadingDispatch, setLoadingDispatch] = useState(false);
   const [updatingAmb, setUpdatingAmb] = useState(false);
+  const [allAmbulances, setAllAmbulances] = useState([]);
+  const [driverLocation, setDriverLocation] = useState(null);
 
   // Bus terminal state
   const [buses, setBuses] = useState([]);
@@ -309,7 +323,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
   const [standingOverride, setStandingOverride] = useState(0);
   const [savingOccupancy, setSavingOccupancy] = useState(false);
 
-  const { busUpdates, connected, socketRef } = useSocket();
+  const { busPositions, busUpdates, ambulancePositions, connected, socketRef } = useSocket();
 
   // Load Bus details
   useEffect(() => {
@@ -322,6 +336,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
         setSelectedBusId(res.data[0].bus_id);
       }
     });
+    fetchAmbulances().then((res) => setAllAmbulances(res.data)).catch(() => {});
   }, [conductor]);
 
   useEffect(() => {
@@ -353,6 +368,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
       (position) => {
         setGpsActive(true);
         const { latitude, longitude } = position.coords;
+        setDriverLocation([longitude, latitude]);
         socketRef.current?.emit('bus_location_update', {
           bus_id: selectedBusId,
           coordinates: [longitude, latitude],
@@ -435,6 +451,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
       async (pos) => {
         if (!ambulanceId) return;
         const { latitude, longitude } = pos.coords;
+        setDriverLocation([longitude, latitude]);
         
         // Sockets emit
         socketRef.current?.emit('ambulance_location_update', {
@@ -677,50 +694,7 @@ export default function ConductorDashboard({ conductor, onLogout }) {
           <span className="hide-on-mobile" style={{ fontWeight: 800, fontSize: 16, color: driverRole === 'conductor' ? '#16a34a' : '#ef4444' }}>Flow</span>
         </div>
 
-        {/* ── ROLE SWITCHER PILL ── */}
-        <div
-          style={{
-            display: 'flex',
-            background: '#334155',
-            borderRadius: 99,
-            padding: 3,
-            border: '1px solid #475569',
-            margin: '0 16px',
-          }}
-        >
-          <button
-            onClick={() => setDriverRole('conductor')}
-            style={{
-              background: driverRole === 'conductor' ? '#16a34a' : 'transparent',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 99,
-              padding: '6px 14px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            🚌 Bus Conductor
-          </button>
-          <button
-            onClick={() => setDriverRole('ambulance_driver')}
-            style={{
-              background: driverRole === 'ambulance_driver' ? '#dc2626' : 'transparent',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 99,
-              padding: '6px 14px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            🚑 Ambulance Driver
-          </button>
-        </div>
+
 
         <div style={{ flex: 1 }} />
 
@@ -770,6 +744,16 @@ export default function ConductorDashboard({ conductor, onLogout }) {
 
       {/* Body Layout */}
       <div className="dashboard-layout" style={{ flex: 1, padding: 20, overflowY: 'auto' }}>
+        <DriverMap
+          driverRole={driverRole}
+          driverLocation={driverLocation}
+          allBuses={buses}
+          allAmbulances={allAmbulances}
+          busPositions={busPositions}
+          ambulancePositions={ambulancePositions}
+          activeDispatch={dispatchData?.active_dispatch}
+        />
+
         {driverRole === 'conductor' ? (
           /* ─── CONDUCTOR APP VIEW ─── */
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 20, alignItems: 'flex-start' }}>
@@ -1180,99 +1164,12 @@ export default function ConductorDashboard({ conductor, onLogout }) {
                         📍 Pickup: <strong>{dispatchData.active_dispatch.pickup_location?.name || 'Gandhipuram Junction'}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 4 }}>
-                        🏥 Destination: <strong>{dispatchData.active_dispatch.destination_hospital}</strong>
+                        🏥 Destination: <strong>{dispatchData.active_dispatch.destination_hospital?.name || dispatchData.active_dispatch.destination_hospital}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#1e40af', marginBottom: 12 }}>
                         📞 Contact: <strong>{dispatchData.active_dispatch.contact_phone}</strong>
                       </div>
-
-                      {/* Green Corridor Trigger Toggle */}
-                      <div
-                        style={{
-                          background: dispatchData.active_dispatch.green_corridor_active ? '#dcfce7' : '#fff',
-                          border: `1.5px solid ${dispatchData.active_dispatch.green_corridor_active ? '#22c55e' : '#cbd5e1'}`,
-                          borderRadius: 10,
-                          padding: 12,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginTop: 10,
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 20 }}>🚥</span>
-                          <div>
-                            <div style={{ fontSize: 12, fontWeight: 800, color: dispatchData.active_dispatch.green_corridor_active ? '#15803d' : '#475569' }}>
-                              Green Corridor {dispatchData.active_dispatch.green_corridor_active ? 'ENABLED' : 'DISABLED'}
-                            </div>
-                            <div style={{ fontSize: 9, color: '#64748b' }}>Triggers priority timing overrides at junctions</div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => handleCorridorToggle(!dispatchData.active_dispatch.green_corridor_active)}
-                          disabled={updatingAmb}
-                          style={{
-                            padding: '8px 12px',
-                            background: dispatchData.active_dispatch.green_corridor_active ? '#dc2626' : '#16a34a',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 6,
-                            fontWeight: 700,
-                            fontSize: 11,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {dispatchData.active_dispatch.green_corridor_active ? 'Deactivate' : 'Activate Priority'}
-                        </button>
-                      </div>
                     </div>
-
-                    {/* Turn-by-Turn Route Instructions */}
-                    {turnSteps.length > 0 && (
-                      <div className="card" style={{ padding: 18 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                          <h4 style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <Navigation size={16} color="#3b82f6" /> Emergency Routing Directions
-                          </h4>
-                          {routeSummary && (
-                            <span style={{ fontSize: 11, color: '#15803d', background: '#dcfce7', padding: '2px 8px', borderRadius: 99, fontWeight: 700 }}>
-                              {routeSummary.distance} · {routeSummary.duration}
-                            </span>
-                          )}
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                          {turnSteps.map((step, idx) => (
-                            <div key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20 }}>
-                                <span
-                                  style={{
-                                    width: 18, height: 18, borderRadius: '50%',
-                                    background: '#3b82f6', color: '#fff',
-                                    fontSize: 10, fontWeight: 800,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  }}
-                                >
-                                  {idx + 1}
-                                </span>
-                                {idx < turnSteps.length - 1 && (
-                                  <div style={{ width: 2, height: 26, background: '#cbd5e1', marginTop: 4 }} />
-                                )}
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>
-                                  {step.instruction}
-                                </div>
-                                <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>
-                                  {step.distance} · {step.duration}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </>
                 ) : (
                   /* Available / Standby Case */

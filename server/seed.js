@@ -138,6 +138,42 @@ const ambulances = [
     equipment: ['Cardiac Monitor', 'Resuscitator', 'Portable Oxygen'],
     battery_level: 92,
   },
+  {
+    ambulance_id: 'TN-38-AM-1084',
+    vehicle_number: '108-TRAUMA-4',
+    driver_name: 'R. Velu',
+    driver_phone: '+91 98424 11223',
+    hospital_name: 'Ganga Hospital',
+    type: 'ALS',
+    status: 'available',
+    current_location: { type: 'Point', coordinates: [76.9496, 11.0279] },
+    equipment: ['Spine Board', 'Trauma Kit', 'Splints'],
+    battery_level: 98,
+  },
+  {
+    ambulance_id: 'TN-38-AM-1085',
+    vehicle_number: '108-NEO-5',
+    driver_name: 'S. Raj',
+    driver_phone: '+91 98425 99887',
+    hospital_name: 'Kovai Medical Center & Hospital (KMCH)',
+    type: 'Neo-Natal',
+    status: 'available',
+    current_location: { type: 'Point', coordinates: [77.0455, 11.0365] },
+    equipment: ['Incubator', 'Neonatal Ventilator'],
+    battery_level: 100,
+  },
+  {
+    ambulance_id: 'TN-38-AM-1086',
+    vehicle_number: '108-BLS-6',
+    driver_name: 'V. Prakash',
+    driver_phone: '+91 98426 66778',
+    hospital_name: 'Coimbatore Medical College Hospital (CMCH)',
+    type: 'BLS',
+    status: 'available',
+    current_location: { type: 'Point', coordinates: [76.9603, 11.0026] },
+    equipment: ['First Aid Kit', 'Stretcher'],
+    battery_level: 90,
+  }
 ];
 
 const initialEmergencyRequests = [
@@ -204,6 +240,28 @@ const buses = [
       { stop_id: 302, sequence: 4 }, { stop_id: 303, sequence: 5 },
     ],
   },
+  {
+    bus_id: 'TN-38-N-3456', bus_number: '20A',
+    route_name: 'Gandhipuram → Saravanampatti',
+    seating_capacity: 40, standing_capacity: 20,
+    current_location: { type: 'Point', coordinates: [76.9897, 11.0772] },
+    current_stop_sequence: 0,
+    route_stops: [
+      { stop_id: 105, sequence: 0 }, { stop_id: 201, sequence: 1 },
+      { stop_id: 405, sequence: 2 },
+    ],
+  },
+  {
+    bus_id: 'TN-38-N-7890', bus_number: 'S7',
+    route_name: 'Town Hall → Podanur',
+    seating_capacity: 35, standing_capacity: 15,
+    current_location: { type: 'Point', coordinates: [76.9829, 10.9631] },
+    current_stop_sequence: 0,
+    route_stops: [
+      { stop_id: 203, sequence: 0 }, { stop_id: 301, sequence: 1 },
+      { stop_id: 418, sequence: 2 },
+    ],
+  }
 ];
 
 // ---------------------------------------------------------------------------
@@ -231,6 +289,20 @@ const conductorPlain = [
     employee_id: 'EMP-1003',
     assigned_bus_id: 'TN-38-N-9012', // Route 11A
   },
+  {
+    username: 'conductor4',
+    password: 'conductor101',
+    full_name: 'Velan T.',
+    employee_id: 'EMP-1004',
+    assigned_bus_id: 'TN-38-N-3456', // Route 20A
+  },
+  {
+    username: 'conductor5',
+    password: 'conductor102',
+    full_name: 'Sankar L.',
+    employee_id: 'EMP-1005',
+    assigned_bus_id: 'TN-38-N-7890', // Route S7
+  }
 ];
 
 // ---------------------------------------------------------------------------

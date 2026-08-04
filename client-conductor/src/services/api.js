@@ -39,6 +39,7 @@ export const verifyOtp = (phone_number, otp) =>
 export const getMe = () => api.get('/auth/me');
 
 export const fetchAllBuses = () => api.get('/buses');
+export const fetchAmbulances = () => api.get('/ambulances');
 
 export const issueTicket = (payload) => api.post('/tickets/issue', payload);
 

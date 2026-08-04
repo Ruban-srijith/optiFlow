@@ -16,6 +16,7 @@ export function useSocket() {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
   const [busPositions, setBusPositions] = useState({});
+  const [ambulancePositions, setAmbulancePositions] = useState({});
   const [busUpdates, setBusUpdates] = useState({});
 
   useEffect(() => {
@@ -34,6 +35,14 @@ export function useSocket() {
       setBusPositions((prev) => ({ ...prev, [bus_id]: coordinates }));
     });
 
+    socket.on('bus_position_update', (data) => {
+      setBusPositions((prev) => ({ ...prev, [data.bus_id]: data.current_location.coordinates }));
+    });
+
+    socket.on('ambulance_position_update', (data) => {
+      setAmbulancePositions((prev) => ({ ...prev, [data.ambulance_id]: data.current_location.coordinates }));
+    });
+
     // Occupancy update after ticket issuance
     socket.on('bus_updated', (data) => {
       const { bus_id, ...rest } = data;
@@ -49,5 +58,5 @@ export function useSocket() {
     };
   }, []);
 
-  return { busPositions, busUpdates, connected };
+  return { busPositions, ambulancePositions, busUpdates, connected, socketRef };
 }

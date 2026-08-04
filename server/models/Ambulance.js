@@ -9,7 +9,7 @@ const ambulanceSchema = new mongoose.Schema({
   type: { type: String, enum: ['ALS', 'BLS', 'ICU', 'Neo-Natal'], default: 'ALS' },
   status: {
     type: String,
-    enum: ['available', 'en_route', 'on_scene', 'transporting', 'maintenance'],
+    enum: ['available', 'en_route', 'on_scene', 'transporting', 'maintenance', 'offline'],
     default: 'available',
   },
   current_location: {

@@ -7,6 +7,7 @@ export function useSocket() {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
   const [busPositions, setBusPositions] = useState({});
+  const [ambulancePositions, setAmbulancePositions] = useState({});
   const [busUpdates, setBusUpdates] = useState({});
 
   useEffect(() => {
@@ -16,8 +17,12 @@ export function useSocket() {
     socket.on('connect', () => setConnected(true));
     socket.on('disconnect', () => setConnected(false));
 
-    socket.on('bus_position', ({ bus_id, coordinates }) => {
-      setBusPositions((p) => ({ ...p, [bus_id]: coordinates }));
+    socket.on('bus_position_update', (data) => {
+      setBusPositions((p) => ({ ...p, [data.bus_id]: data.current_location.coordinates }));
+    });
+
+    socket.on('ambulance_position_update', (data) => {
+      setAmbulancePositions((p) => ({ ...p, [data.ambulance_id]: data.current_location.coordinates }));
     });
 
     socket.on('bus_updated', (data) => {
@@ -27,5 +32,5 @@ export function useSocket() {
     return () => socket.disconnect();
   }, []);
 
-  return { busPositions, busUpdates, connected, socketRef };
+  return { busPositions, ambulancePositions, busUpdates, connected, socketRef };
 }

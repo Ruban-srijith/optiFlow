@@ -253,7 +253,7 @@ html, body, #root {
 }
 
 /* ─── Admin Sidebar ─────────────────────────────────────────────────────────── */
-.sidebar {
+.admin-sidebar {
   width: 260px;
   min-width: 260px;
   background: #0f172a;
@@ -652,7 +652,7 @@ tr:hover td {
   .grid-3 {
     grid-template-columns: repeat(2, 1fr);
   }
-  .sidebar {
+  .admin-sidebar {
     width: 220px;
     min-width: 220px;
   }
@@ -673,7 +673,7 @@ tr:hover td {
     min-height: 100vh;
     overflow: auto;
   }
-  .sidebar {
+  .admin-sidebar {
     width: 100%;
     min-width: unset;
     height: auto;

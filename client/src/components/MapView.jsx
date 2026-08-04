@@ -64,84 +64,101 @@ const createBusIcon = (freeSeats = 10, capacity = 40) => {
   });
 };
 
-const createAmbulanceIcon = (status = 'available') => {
-  const isEnRoute = status === 'en_route' || status === 'transporting';
-  const color = isEnRoute ? '#dc2626' : '#2563eb';
-  const html = `
-    <div style="width: 46px; height: 46px; position: relative; display: flex; align-items: center; justify-content: center;">
-      <div style="
-        position: absolute; width: 44px; height: 44px; borderRadius: 50%;
-        background: ${color}; opacity: 0.2; animation: pulse 1.2s infinite;
-      "></div>
-      <div style="
-        width: 36px; height: 36px; borderRadius: 50%; background: #ffffff;
-        border: 2px solid ${color}; display: flex; align-items: center; justify-content: center;
-        boxShadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 20px;
-      ">
-        ${renderToString(<Ambulance size={20} color={color} />)}
-      </div>
-    </div>
-  `;
-  return L.divIcon({
-    html,
-    className: 'custom-ambulance-icon',
-    iconSize: [46, 46],
-    iconAnchor: [23, 23],
-    popupAnchor: [0, -23],
-  });
-};
-
-const createHospitalIcon = (name) => {
-  const html = `
+const hospitalSvg = renderToString(<Hospital size={20} color="#ffffff" />);
+const hospitalIcon = L.divIcon({
+  html: `
     <div style="
       width: 34px; height: 34px; borderRadius: 8px; background: #dc2626;
       border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center;
       boxShadow: 0 4px 12px rgba(220,38,38,0.3); font-weight: 800; color: #ffffff; font-size: 16px;
     ">
-      ${renderToString(<Hospital size={20} color="#ffffff" />)}
+      ${hospitalSvg}
     </div>
-  `;
-  return L.divIcon({
-    html,
-    className: 'custom-hospital-icon',
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
-    popupAnchor: [0, -17],
-  });
+  `,
+  className: 'custom-hospital-icon',
+  iconSize: [34, 34],
+  iconAnchor: [17, 17],
+  popupAnchor: [0, -17],
+});
+
+const ambulanceRedSvg = renderToString(<Ambulance size={20} color="#dc2626" />);
+const ambulanceBlueSvg = renderToString(<Ambulance size={20} color="#2563eb" />);
+
+const ambulanceRedIcon = L.divIcon({
+  html: `
+    <div style="width: 46px; height: 46px; position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="position: absolute; width: 44px; height: 44px; borderRadius: 50%; background: #dc2626; opacity: 0.2; animation: pulse 1.2s infinite;"></div>
+      <div style="width: 36px; height: 36px; borderRadius: 50%; background: #ffffff; border: 2px solid #dc2626; display: flex; align-items: center; justify-content: center; boxShadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 20px;">
+        ${ambulanceRedSvg}
+      </div>
+    </div>
+  `,
+  className: 'custom-ambulance-icon',
+  iconSize: [46, 46],
+  iconAnchor: [23, 23],
+  popupAnchor: [0, -23],
+});
+
+const ambulanceBlueIcon = L.divIcon({
+  html: `
+    <div style="width: 46px; height: 46px; position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="position: absolute; width: 44px; height: 44px; borderRadius: 50%; background: #2563eb; opacity: 0.2; animation: pulse 1.2s infinite;"></div>
+      <div style="width: 36px; height: 36px; borderRadius: 50%; background: #ffffff; border: 2px solid #2563eb; display: flex; align-items: center; justify-content: center; boxShadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 20px;">
+        ${ambulanceBlueSvg}
+      </div>
+    </div>
+  `,
+  className: 'custom-ambulance-icon',
+  iconSize: [46, 46],
+  iconAnchor: [23, 23],
+  popupAnchor: [0, -23],
+});
+
+const createAmbulanceIcon = (status = 'available') => {
+  return (status === 'en_route' || status === 'transporting') ? ambulanceRedIcon : ambulanceBlueIcon;
 };
 
-const createUserIcon = () => {
-  const html = `
+const userIcon = L.divIcon({
+  html: `
     <div style="width: 32px; height: 32px; position: relative; display: flex; align-items: center; justify-content: center;">
       <div style="position: absolute; width: 32px; height: 32px; background: rgba(22, 163, 74, 0.3); border-radius: 50%; animation: pulse-dot 1.5s ease-in-out infinite;"></div>
       <div style="width: 16px; height: 16px; background: #16a34a; border: 3px solid #ffffff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>
     </div>
-  `;
-  return L.divIcon({
-    html,
-    className: 'custom-user-icon',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-  });
-};
+  `,
+  className: 'custom-user-icon',
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+});
 
-const createMarkerIcon = (label, color) => {
-  const html = `
+const originIcon = L.divIcon({
+  html: `
     <div style="position: relative; width: 32px; height: 32px;">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#16a34a">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="white" stroke-width="1.5"/>
-        <text x="12" y="10" font-size="8" fill="white" font-weight="bold" text-anchor="middle" dominant-baseline="middle">${label}</text>
+        <text x="12" y="10" font-size="8" fill="white" font-weight="bold" text-anchor="middle" dominant-baseline="middle">A</text>
       </svg>
     </div>
-  `;
-  return L.divIcon({
-    html,
-    className: 'custom-marker-icon',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
-};
+  `,
+  className: 'custom-marker-icon',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const destIcon = L.divIcon({
+  html: `
+    <div style="position: relative; width: 32px; height: 32px;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1e293b">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="white" stroke-width="1.5"/>
+        <text x="12" y="10" font-size="8" fill="white" font-weight="bold" text-anchor="middle" dominant-baseline="middle">B</text>
+      </svg>
+    </div>
+  `,
+  className: 'custom-marker-icon',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
 
 function MapResizer() {
   const map = useMap();
@@ -168,6 +185,7 @@ export default function MapView({
   originStop,
   destinationStop,
   ambulances = [],
+  ambulancePositions = {},
   hospitals = [],
   activeEmergency,
   userLocation,
@@ -235,19 +253,19 @@ export default function MapView({
       {portalMode === 'bus' && originStop && (
         <Marker
           position={[originStop.location.coordinates[1], originStop.location.coordinates[0]]}
-          icon={createMarkerIcon('A', '#16a34a')}
+          icon={originIcon}
         />
       )}
       {portalMode === 'bus' && destinationStop && (
         <Marker
           position={[destinationStop.location.coordinates[1], destinationStop.location.coordinates[0]]}
-          icon={createMarkerIcon('B', '#1e293b')}
+          icon={destIcon}
         />
       )}
 
       {/* Passenger Live Location Marker */}
       {userLocation && (
-        <Marker position={userLocation} icon={createUserIcon()} zIndexOffset={500}>
+        <Marker position={userLocation} icon={userIcon} zIndexOffset={500}>
           <Popup>
             <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
               <div style={{ fontWeight: 800, fontSize: 13, color: '#16a34a' }}>
@@ -267,7 +285,7 @@ export default function MapView({
           <Marker
             key={h.hospital_id || h.name}
             position={[h.location.coordinates[1], h.location.coordinates[0]]}
-            icon={createHospitalIcon(h.name)}
+            icon={hospitalIcon}
           >
             <Popup>
               <div style={{ fontFamily: 'Inter, sans-serif', padding: 4 }}>
@@ -284,7 +302,8 @@ export default function MapView({
       {/* Ambulance Markers */}
       {portalMode === 'ambulance' &&
         ambulances.map((amb) => {
-          const coords = amb.current_location?.coordinates || [76.9629, 11.0168];
+          const livePos = ambulancePositions?.[amb.ambulance_id];
+          const coords = livePos || amb.current_location?.coordinates || [76.9629, 11.0168];
           return (
             <Marker
               key={amb.ambulance_id}
